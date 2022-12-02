@@ -1,16 +1,14 @@
-use std::time::Instant;
-
 use super::*;
+use byteorder::{BigEndian, ReadBytesExt};
+use std::io::Cursor;
+use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<(char, char)> {
     let mut games: Vec<(char, char)> = Vec::new();
-    for line in inp.lines() {
-        match line.split_once(" ") {
-            Some((opp, guide)) => {
-                games.push((opp.as_bytes()[0] as char, guide.as_bytes()[0] as char))
-            }
-            None => {}
-        }
+    let mut rdr = Cursor::new(inp.as_bytes());
+    while let Ok(val) = rdr.read_u32::<BigEndian>() {
+        let [a, _, c, _] = val.to_be_bytes();
+        games.push((a as char, c as char));
     }
     games
 }
