@@ -47,9 +47,9 @@ fn part2(inp: &[(char, char)]) -> i64 {
             ('Y', 'C') => score += 6,
 
             // needs to win
-            ('Z', 'A') => score += 7,
-            ('Z', 'B') => score += 8,
-            ('Z', 'C') => score += 9,
+            ('Z', 'A') => score += 8,
+            ('Z', 'B') => score += 9,
+            ('Z', 'C') => score += 7,
             _ => unreachable!(),
         }
     }
