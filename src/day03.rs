@@ -11,13 +11,21 @@ fn parse(inp: &str) -> Vec<(&str, (&str, &str))> {
 
 fn str_to_int(s: &str) -> u64 {
     let mut res = 0u64;
-    for c in s.chars() {
-        match c {
-            'a'..='z' => res |= 1 << (c as u32 - 96),
-            'A'..='Z' => res |= 1 << (c as u32 - 38),
-            _ => unreachable!(),
-        }
+    // Extract the upper/lower case bit and work with that
+    // 'a' 0b1100001
+    // 'A' 0b1000001
+    //        ^
+    for c in s.as_bytes() {
+        res |= (((c >> 5) & 1) as u64) << (c - 96);
+        res |= (((!c >> 5) & 1) as u64) << (c - 38);
     }
+    // for c in s.chars() {
+    //     match c {
+    //         'a'..='z' => res |= 1 << (c as u32 - 96),
+    //         'A'..='Z' => res |= 1 << (c as u32 - 38),
+    //         _ => unreachable!(),
+    //     }
+    // }
     res
 }
 
