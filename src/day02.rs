@@ -1,4 +1,3 @@
-use super::*;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::time::Instant;
@@ -55,9 +54,9 @@ fn part2(inp: &[(char, char)]) -> i64 {
 }
 
 pub fn solve() {
-    let raw_input = get_input(2);
+    let raw_input = include_str!("../input/day02.txt");
     let start = Instant::now();
-    let inp = parse(&raw_input);
+    let inp = parse(raw_input);
     let parse_time = start.elapsed();
     println!("Part 1: {}", part1(&inp));
     let p1_time = start.elapsed() - parse_time;

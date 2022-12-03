@@ -1,7 +1,5 @@
 use std::time::Instant;
 
-use super::*;
-
 fn parse(inp: &str) -> Vec<i64> {
     let mut total_count: Vec<i64> = Vec::new();
     let mut current: i64 = 0;
@@ -27,9 +25,9 @@ fn part2(inp: &[i64]) -> i64 {
 }
 
 pub fn solve() {
-    let raw_input = get_input(1);
+    let raw_input = include_str!("../input/day01.txt");
     let start = Instant::now();
-    let inp = parse(&raw_input);
+    let inp = parse(raw_input);
     let parse_time = start.elapsed();
     println!("Part 1: {}", part1(&inp));
     let p1_time = start.elapsed() - parse_time;

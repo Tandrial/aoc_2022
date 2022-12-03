@@ -1,4 +1,3 @@
-use super::*;
 use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<(&str, (&str, &str))> {
@@ -54,9 +53,9 @@ fn part2(inp: &[(&str, (&str, &str))]) -> i64 {
 }
 
 pub fn solve() {
-    let raw_input = get_input(3);
+    let raw_input = include_str!("../input/day03.txt");
     let start = Instant::now();
-    let inp = parse(&raw_input);
+    let inp = parse(raw_input);
     let parse_time = start.elapsed();
     println!("Part 1: {}", part1(&inp));
     let p1_time = start.elapsed() - parse_time;
