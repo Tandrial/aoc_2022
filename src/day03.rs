@@ -2,11 +2,11 @@ use super::*;
 use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<(&str, (&str, &str))> {
-    let mut total_count: Vec<(&str, (&str, &str))> = Vec::new();
+    let mut backpacks: Vec<(&str, (&str, &str))> = Vec::new();
     for line in inp.lines() {
-        total_count.push((line, line.split_at(line.len() / 2)));
+        backpacks.push((line, line.split_at(line.len() / 2)));
     }
-    total_count
+    backpacks
 }
 
 fn str_to_int(s: &str) -> u64 {
