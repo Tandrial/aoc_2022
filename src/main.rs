@@ -10,4 +10,6 @@ fn main() {
     day02::solve();
     println!("Day 03");
     day03::solve();
+    println!("Day 04");
+    day04::solve();
 }
