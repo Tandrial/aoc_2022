@@ -7,36 +7,31 @@ fn get_range(line: &str) -> Option<RangeInclusive<u32>> {
     Some(start..=end)
 }
 fn parse(inp: &str) -> Vec<(RangeInclusive<u32>, RangeInclusive<u32>)> {
-    let mut res: Vec<(RangeInclusive<u32>, RangeInclusive<u32>)> = Vec::new();
-    for line in inp.lines() {
-        let mut pair = line.split(',');
-        let lhs = get_range(pair.next().unwrap()).unwrap();
-        let rhs = get_range(pair.next().unwrap()).unwrap();
-        res.push((lhs, rhs));
-    }
-    res
+    inp.lines()
+        .map(|line| {
+            let mut pair = line.split(',');
+            let lhs = get_range(pair.next().unwrap()).unwrap();
+            let rhs = get_range(pair.next().unwrap()).unwrap();
+            (lhs, rhs)
+        })
+        .collect::<Vec<(RangeInclusive<u32>, RangeInclusive<u32>)>>()
 }
 
 fn part1(inp: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> i64 {
-    let mut score: i64 = 0;
-    for (lhs, rhs) in inp {
-        if lhs.contains(rhs.start()) && lhs.contains(rhs.end())
-            || rhs.contains(lhs.start()) && rhs.contains(lhs.end())
-        {
-            score += 1;
-        }
-    }
-    score
+    inp.iter()
+        .map(|(l, r)| {
+            i64::from(
+                l.contains(r.start()) && l.contains(r.end())
+                    || r.contains(l.start()) && r.contains(l.end()),
+            )
+        })
+        .sum()
 }
 
 fn part2(inp: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> i64 {
-    let mut score: i64 = 0;
-    for (lhs, rhs) in inp {
-        if !(lhs.end() < rhs.start() || rhs.end() < lhs.start()) {
-            score += 1
-        }
-    }
-    score
+    inp.iter()
+        .map(|(l, r)| i64::from(!(l.end() < r.start() || r.end() < l.start())))
+        .sum()
 }
 
 pub fn solve() {
