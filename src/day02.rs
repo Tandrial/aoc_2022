@@ -2,6 +2,8 @@ use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::time::Instant;
 
+use crate::Timing;
+
 fn parse(inp: &str) -> Vec<(char, char)> {
     let mut games: Vec<(char, char)> = Vec::new();
     let mut rdr = Cursor::new(inp.as_bytes());
@@ -53,20 +55,24 @@ fn part2(inp: &[(char, char)]) -> i64 {
     score
 }
 
-pub fn solve() {
+pub fn solve() -> Timing {
     let raw_input = include_str!("../input/day02.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();
-    println!("Part 1: {}", part1(&inp));
+    let p1 = part1(&inp);
     let p1_time = start.elapsed() - parse_time;
-    println!("Part 2: {}", part2(&inp));
+    let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!(
-        "Parsing={} µs, p1={} µs, p2={} µs",
-        parse_time.as_micros(),
-        p1_time.as_micros(),
-        p2_time.as_micros()
-    );
+    println!("Day 02");
+    println!("\tPart 1: {}", p1);
+    println!("\tPart 2: {}", p2);
+
+    Timing {
+        day: 2,
+        parse: parse_time,
+        p1: p1_time,
+        p2: p2_time,
+    }
 }

@@ -1,5 +1,7 @@
 use std::{ops::RangeInclusive, time::Instant};
 
+use crate::Timing;
+
 fn get_range(line: &str) -> Option<RangeInclusive<u32>> {
     let mut iter = line.split('-');
     let start: u32 = iter.next()?.parse().ok()?;
@@ -34,20 +36,24 @@ fn part2(inp: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> i64 {
         .sum()
 }
 
-pub fn solve() {
+pub fn solve() -> Timing {
     let raw_input = include_str!("../input/day04.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();
-    println!("Part 1: {}", part1(&inp));
+    let p1 = part1(&inp);
     let p1_time = start.elapsed() - parse_time;
-    println!("Part 2: {}", part2(&inp));
+    let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!(
-        "Parsing={} µs, p1={} µs, p2={} µs",
-        parse_time.as_micros(),
-        p1_time.as_micros(),
-        p2_time.as_micros()
-    );
+    println!("Day 04");
+    println!("\tPart 1: {}", p1);
+    println!("\tPart 2: {}", p2);
+
+    Timing {
+        day: 4,
+        parse: parse_time,
+        p1: p1_time,
+        p2: p2_time,
+    }
 }
