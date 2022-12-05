@@ -4,27 +4,24 @@ type CrateStack = Vec<char>;
 type Move = (usize, usize, usize);
 
 fn parse(inp: &str) -> (Vec<CrateStack>, Vec<Move>) {
-    let inp_split: Vec<&str> = inp.split("\n\n").collect();
+    let (stacks_str, moves_str) = inp.split_once("\n\n").unwrap();
+    let mut stack_lines = stacks_str.lines().rev();
 
-    let mut stacks_raw = inp_split.first().unwrap().lines().rev();
-    let stack_count = stacks_raw.next().unwrap().split("   ").count();
+    let stack_count = stack_lines.next().unwrap().split("   ").count();
     let mut stacks = std::iter::repeat(vec![])
         .take(stack_count)
         .collect::<Vec<_>>();
 
-    for line in stacks_raw {
+    for line in stack_lines {
         for num in 0..stack_count {
             match line.as_bytes().get(1 + num * 4) {
-                Some(b' ') => {}
+                Some(b' ') | None => {}
                 Some(e) => stacks.get_mut(num).unwrap().push(*e as char),
-                None => {}
             }
         }
     }
 
-    let moves = inp_split
-        .get(1)
-        .unwrap()
+    let moves = moves_str
         .split('\n')
         .map(|line| {
             let elem = line.split(' ').collect::<Vec<&str>>();
@@ -43,10 +40,10 @@ fn part1(inp: &(Vec<CrateStack>, Vec<Move>)) -> String {
     let mut state = inp.0.clone();
     for (cnt, from, to) in inp.1.iter() {
         for _ in 0..*cnt {
-            let f_stack = state.get_mut(*from - 1).unwrap();
-            let c = f_stack.pop().unwrap();
-            let t_stack = state.get_mut(*to - 1).unwrap();
-            t_stack.push(c);
+            let source = state.get_mut(*from - 1).unwrap();
+            let c = source.pop().unwrap();
+            let dest = state.get_mut(*to - 1).unwrap();
+            dest.push(c);
         }
     }
     state.iter().map(|stack| stack.last().unwrap()).collect()
