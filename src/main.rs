@@ -8,7 +8,7 @@ pub fn print_stats(stats: &[Timing]) {
     let mut total_p2 = Duration::new(0, 0);
     println!("\n");
     println!("| Day |      Parse |      Part1 |      Part2 |      Total |");
-    println!("| --- | ---------- | ---------- | ---------- | ---------- |");
+    println!("| :-: | ---------: | ---------: | ---------: | ---------: |");
     for stat in stats {
         total_parse += stat.parse;
         total_p1 += stat.p1;
