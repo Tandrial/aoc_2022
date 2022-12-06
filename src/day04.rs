@@ -36,7 +36,7 @@ fn part2(inp: &[(RangeInclusive<u32>, RangeInclusive<u32>)]) -> i64 {
         .sum()
 }
 
-pub fn solve() -> Timing {
+pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day04.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
@@ -46,9 +46,11 @@ pub fn solve() -> Timing {
     let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!("Day 04");
-    println!("\tPart 1: {}", p1);
-    println!("\tPart 2: {}", p2);
+    if output {
+        println!("Day 04");
+        println!("\tPart 1: {}", p1);
+        println!("\tPart 2: {}", p2);
+    }
 
     Timing {
         day: 4,

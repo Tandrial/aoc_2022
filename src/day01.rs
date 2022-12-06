@@ -26,7 +26,7 @@ fn part2(inp: &[i64]) -> i64 {
     inp[inp.len() - 3..].iter().sum()
 }
 
-pub fn solve() -> Timing {
+pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day01.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
@@ -36,10 +36,11 @@ pub fn solve() -> Timing {
     let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!("Day 01");
-    println!("\tPart 1: {}", p1);
-    println!("\tPart 2: {}", p2);
-
+    if output {
+        println!("Day 01");
+        println!("\tPart 1: {}", p1);
+        println!("\tPart 2: {}", p2);
+    }
     Timing {
         day: 1,
         parse: parse_time,

@@ -1,43 +1,6 @@
-use std::{fmt::Display, ops::Add, time::Duration};
+use std::{ops::Add, time::Duration};
 
-mod day01;
-mod day02;
-mod day03;
-mod day04;
-mod day05;
-
-pub struct Timing {
-    day: u32,
-    parse: Duration,
-    p1: Duration,
-    p2: Duration,
-}
-
-impl Display for Timing {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(
-            f,
-            " | {:02}  | {:>10} | {:>10} | {:>10} | {:>10} |",
-            self.day,
-            dur_string(&self.parse),
-            dur_string(&self.p1),
-            dur_string(&self.p2),
-            dur_string(&self.parse.add(self.p1).add(self.p2))
-        )
-    }
-}
-
-fn dur_string(d: &Duration) -> String {
-    if d.as_secs() != 0 {
-        format!("{:.3} s", d.as_secs_f32())
-    } else if d.as_millis() != 0 {
-        format!("{:.3} ms", d.as_micros() as f32 / 1000.0)
-    } else if d.as_micros() != 0 {
-        format!("{:.3} us", d.as_nanos() as f32 / 1000.0)
-    } else {
-        format!("{:.3} ns", d.as_nanos())
-    }
-}
+use aoc_2022::Timing;
 
 pub fn print_stats(stats: &[Timing]) {
     let mut total_parse = Duration::new(0, 0);
@@ -55,22 +18,22 @@ pub fn print_stats(stats: &[Timing]) {
     println!("-+-----+------------+------------+------------+------------+-");
     let line = format!(
         " | sum | {:>10} | {:>10} | {:>10} | {:>10} |",
-        dur_string(&total_parse),
-        dur_string(&total_p1),
-        dur_string(&total_p2),
-        dur_string(&total_parse.add(total_p1).add(total_p2))
+        aoc_2022::dur_string(&total_parse),
+        aoc_2022::dur_string(&total_p1),
+        aoc_2022::dur_string(&total_p2),
+        aoc_2022::dur_string(&total_parse.add(total_p1).add(total_p2))
     );
     println!("{}", line);
 }
 
 fn main() {
     let stats = vec![
-        day01::solve(),
-        day02::solve(),
-        day03::solve(),
-        day04::solve(),
-        day05::solve(),
+        aoc_2022::day01::solve(true),
+        aoc_2022::day02::solve(true),
+        aoc_2022::day03::solve(true),
+        aoc_2022::day04::solve(true),
+        aoc_2022::day05::solve(true),
+        aoc_2022::day06::solve(true),
     ];
-
     print_stats(&stats);
 }

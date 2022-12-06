@@ -11,11 +11,8 @@ fn parse(inp: &str) -> (Vec<CrateStack>, Vec<Move>) {
 
     let count = stack_lines
         .next()
-        .unwrap()
-        .split(' ')
-        .last()
-        .unwrap()
-        .parse::<usize>()
+        .and_then(|line| line.split(' ').last())
+        .and_then(|last| last.parse::<usize>().ok())
         .unwrap();
     let mut stacks = std::iter::repeat(vec![]).take(count).collect::<Vec<_>>();
 
@@ -77,7 +74,7 @@ fn index_twice<T>(slice: &mut [T], a: usize, b: usize) -> Option<(&mut T, &mut T
     }
 }
 
-pub fn solve() -> Timing {
+pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day05.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
@@ -87,9 +84,11 @@ pub fn solve() -> Timing {
     let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!("Day 05");
-    println!("\tPart 1: {}", p1);
-    println!("\tPart 2: {}", p2);
+    if output {
+        println!("Day 05");
+        println!("\tPart 1: {}", p1);
+        println!("\tPart 2: {}", p2);
+    }
 
     Timing {
         day: 5,

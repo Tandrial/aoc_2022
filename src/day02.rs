@@ -55,7 +55,7 @@ fn part2(inp: &[(char, char)]) -> i64 {
     score
 }
 
-pub fn solve() -> Timing {
+pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day02.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
@@ -65,9 +65,11 @@ pub fn solve() -> Timing {
     let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
-    println!("Day 02");
-    println!("\tPart 1: {}", p1);
-    println!("\tPart 2: {}", p2);
+    if output {
+        println!("Day 02");
+        println!("\tPart 1: {}", p1);
+        println!("\tPart 2: {}", p2);
+    }
 
     Timing {
         day: 2,
