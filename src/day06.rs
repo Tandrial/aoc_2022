@@ -1,17 +1,24 @@
 use crate::Timing;
 use std::time::Instant;
 
+#[inline(always)]
+fn to_shift(c: u8) -> u32 {
+    // to make the lowercase chars a..z fit into an u32 we can use mod 32 to have to number wrap around
+    // Since 32 is a power of 2 we can rewrite c % 32 as c & 31
+    1 << (c & 31)
+}
+
 fn find_offset(inp: &str, size: usize) -> usize {
-    let mut mask: u64 = 0;
+    let mut mask = 0u32;
     let data = inp.as_bytes();
 
-    (0..size).for_each(|idx| mask ^= 1 << (data[idx] - b'a'));
+    (0..size).for_each(|idx| mask ^= to_shift(data[idx]));
     for idx in size..data.len() {
         if mask.count_ones() as usize == size {
             return idx;
         }
-        mask ^= 1 << (data[idx - size] - b'a');
-        mask ^= 1 << (data[idx] - b'a');
+        mask ^= to_shift(data[idx - size]);
+        mask ^= to_shift(data[idx]);
     }
     unreachable!()
 }
