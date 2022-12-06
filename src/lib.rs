@@ -17,7 +17,7 @@ impl Display for Timing {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(
             f,
-            " | {:02}  | {:>10} | {:>10} | {:>10} | {:>10} |",
+            "| {:02}  | {:>10} | {:>10} | {:>10} | {:>10} |",
             self.day,
             dur_string(&self.parse),
             dur_string(&self.p1),

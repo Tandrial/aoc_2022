@@ -7,17 +7,16 @@ pub fn print_stats(stats: &[Timing]) {
     let mut total_p1 = Duration::new(0, 0);
     let mut total_p2 = Duration::new(0, 0);
     println!("\n");
-    println!(" | Day |      Parse |      Part1 |      Part2 |      Total |");
-    println!("-+-----+------------+------------+------------+------------+-");
+    println!("| Day |      Parse |      Part1 |      Part2 |      Total |");
+    println!("| --- | ---------- | ---------- | ---------- | ---------- |");
     for stat in stats {
         total_parse += stat.parse;
         total_p1 += stat.p1;
         total_p2 += stat.p2;
         println!("{}", stat);
     }
-    println!("-+-----+------------+------------+------------+------------+-");
     let line = format!(
-        " | sum | {:>10} | {:>10} | {:>10} | {:>10} |",
+        "| sum | {:>10} | {:>10} | {:>10} | {:>10} |",
         aoc_2022::dur_string(&total_parse),
         aoc_2022::dur_string(&total_p1),
         aoc_2022::dur_string(&total_p2),
