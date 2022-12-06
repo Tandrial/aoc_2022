@@ -4,8 +4,7 @@ use std::time::Instant;
 #[inline(always)]
 fn to_shift(c: u8) -> u32 {
     // to make the lowercase chars a..z fit into an u32 we can use mod 32 to have to number wrap around
-    // Since 32 is a power of 2 we can rewrite c % 32 as c & 31
-    1 << (c & 31)
+    1 << (c % 32)
 }
 
 fn find_offset(inp: &str, size: usize) -> usize {
