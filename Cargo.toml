@@ -7,10 +7,10 @@ edition = "2021"
 
 [dependencies]
 byteorder="*"
+relative-path="*"
 
 [dev-dependencies]
-cargo-criterion = "*"
-criterion = "*"
+criterion = "0.4"
 
 [[bench]]
 name = "aoc_2022"
