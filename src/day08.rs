@@ -12,7 +12,7 @@ fn parse(input: &str) -> Vec<Vec<u8>> {
     grid
 }
 
-fn both(inp: &Vec<Vec<u8>>) -> (i64, u64) {
+fn both(inp: &Vec<Vec<u8>>) -> (i64, i64) {
     let (h, w) = (inp.len() as i64, inp.first().unwrap().len() as i64);
     let mut p1 = 2 * h + 2 * (w - 2);
     let mut p2 = 0;
@@ -24,15 +24,15 @@ fn both(inp: &Vec<Vec<u8>>) -> (i64, u64) {
             for (dx, dy) in &[(0, -1i64), (0, 1), (1, 0), (-1i64, 0)] {
                 let mut view_distance = 0;
                 let mut blocked = false;
-                let (mut curr_x, mut curr_y) = (x as i64 + dx, y as i64 + dy);
-                while (0..w).contains(&curr_x) && (0..h).contains(&curr_y) {
+                let (mut cur_x, mut cur_y) = (x as i64 + dx, y as i64 + dy);
+                while (0..w).contains(&cur_x) && (0..h).contains(&cur_y) {
                     view_distance += 1;
-                    if inp[curr_y as usize][curr_x as usize] >= inp[y as usize][x as usize] {
+                    if inp[cur_y as usize][cur_x as usize] >= inp[y as usize][x as usize] {
                         blocked |= true;
                         break;
                     }
-                    curr_x += dx;
-                    curr_y += dy;
+                    cur_x += dx;
+                    cur_y += dy;
                 }
                 score *= view_distance;
                 can_see |= !blocked;
