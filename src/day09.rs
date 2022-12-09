@@ -1,7 +1,7 @@
 use crate::{index_twice, Timing};
 use std::{collections::HashSet, time::Instant};
 
-fn parse(inp: &str) -> Vec<(char, u64)> {
+fn parse(inp: &str) -> Vec<(char, u8)> {
     inp.lines()
         .map(|line| {
             let (lhs, rhs) = line.split_once(' ').unwrap();
@@ -10,10 +10,10 @@ fn parse(inp: &str) -> Vec<(char, u64)> {
         .collect()
 }
 
-fn both(inp: &Vec<(char, u64)>) -> (usize, usize) {
+fn both(inp: &Vec<(char, u8)>) -> (usize, usize) {
     let mut moved_p1 = HashSet::from([(0, 0)]);
     let mut moved_p2 = HashSet::from([(0, 0)]);
-    let mut rope = std::iter::repeat((0, 0)).take(10).collect::<Vec<_>>();
+    let mut rope = [(0, 0); 10];
     for (dir, l) in inp {
         let offset = match &dir {
             'U' => (-1, 0),
