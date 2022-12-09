@@ -11,11 +11,9 @@ fn parse(inp: &str) -> Vec<(char, u64)> {
 }
 
 fn both(inp: &Vec<(char, u64)>) -> (usize, usize) {
-    let mut moved_p1 = HashSet::<(i32, i32)>::new();
-    let mut moved_p2 = HashSet::<(i32, i32)>::new();
+    let mut moved_p1 = HashSet::from([(0, 0)]);
+    let mut moved_p2 = HashSet::from([(0, 0)]);
     let mut rope = std::iter::repeat((0, 0)).take(10).collect::<Vec<_>>();
-    moved_p1.insert((0, 0));
-    moved_p2.insert((0, 0));
     for (dir, l) in inp {
         let offset = match &dir {
             'U' => (-1, 0),
@@ -56,10 +54,8 @@ pub fn solve(output: bool) -> Timing {
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();
-    // let p1 = p1(&inp);
     let p1_time = start.elapsed() - parse_time;
     let (p1, p2) = both(&inp);
-    // let p2 = p2(&inp);
     let p2_time = start.elapsed() - p1_time;
 
     if output {
