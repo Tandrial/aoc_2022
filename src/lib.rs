@@ -8,6 +8,7 @@ pub mod day05;
 pub mod day06;
 pub mod day07;
 pub mod day08;
+pub mod day09;
 
 pub struct Timing {
     pub day: u32,
@@ -38,5 +39,18 @@ pub fn dur_string(d: &Duration) -> String {
         format!("{:.3} us", d.as_nanos() as f32 / 1000.0)
     } else {
         format!("{:.3} ns", d.as_nanos())
+    }
+}
+
+fn index_twice<T>(slice: &mut [T], a: usize, b: usize) -> Option<(&mut T, &mut T)> {
+    if a == b {
+        return None;
+    }
+    // safe because a, b are distinct
+    unsafe {
+        Some((
+            &mut *(&mut slice[a] as *mut _),
+            &mut *(&mut slice[b] as *mut _),
+        ))
     }
 }

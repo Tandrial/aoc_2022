@@ -1,6 +1,6 @@
 use std::time::Instant;
 
-use crate::Timing;
+use crate::{index_twice, Timing};
 
 type CrateStack = Vec<char>;
 type Move = (usize, usize, usize);
@@ -59,19 +59,6 @@ fn apply_moves(inp: &(Vec<CrateStack>, Vec<Move>), lifo: bool) -> String {
         }
     }
     state.iter().map(|stack| stack.last().unwrap()).collect()
-}
-
-fn index_twice<T>(slice: &mut [T], a: usize, b: usize) -> Option<(&mut T, &mut T)> {
-    if a == b {
-        return None;
-    }
-    // safe because a, b are distinct
-    unsafe {
-        Some((
-            &mut *(&mut slice[a] as *mut _),
-            &mut *(&mut slice[b] as *mut _),
-        ))
-    }
 }
 
 pub fn solve(output: bool) -> Timing {
