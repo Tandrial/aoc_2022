@@ -28,7 +28,7 @@ fn both(inp: &Vec<(char, u64)>) -> (usize, usize) {
             head.1 += offset.1;
             for idx in 0..rope.len() - 1 {
                 let (h, t) = index_twice::<(i32, i32)>(&mut rope, idx, idx + 1).unwrap();
-                let d = dist(*h, *t);
+                let d = dist(h, t);
                 if d > 1 {
                     t.0 += (h.0 - t.0).signum();
                     t.1 += (h.1 - t.1).signum();
@@ -45,7 +45,7 @@ fn both(inp: &Vec<(char, u64)>) -> (usize, usize) {
 }
 
 #[inline(always)]
-fn dist(head: (i32, i32), tail: (i32, i32)) -> i32 {
+fn dist(head: &(i32, i32), tail: &(i32, i32)) -> i32 {
     (tail.0 - head.0).abs().max((tail.1 - head.1).abs())
 }
 

@@ -22,7 +22,7 @@ Trying to stay under `1s` for the whole thing.
 
 ## Criterion benches
 
-`0.9978815 s` remaining
+`0.9978729 s` remaining
 
 ```
 AoC 2022 - Day01        time:   [29.263 µs 29.386 µs 29.515 µs]
@@ -33,7 +33,7 @@ AoC 2022 - Day05        time:   [129.37 µs 130.05 µs 130.90 µs]
 AoC 2022 - Day06        time:   [10.116 µs 10.153 µs 10.197 µs]
 AoC 2022 - Day07        time:   [698.67 µs 699.67 µs 700.79 µs]
 AoC 2022 - Day08        time:   [295.32 µs 296.20 µs 297.34 µs]
-AoC 2022 - Day09        time:   [732.77 µs 733.31 µs 733.85 µs]
+AoC 2022 - Day09        time:   [719.02 µs 722.17 µs 724.95 µs]
 
-AoC 2022 - All          time:   [2.1142 ms 2.1185 ms 2.1229 ms]
+AoC 2022 - All          time:   [2.1222 ms 2.1271 ms 2.1325 ms]
 ```
