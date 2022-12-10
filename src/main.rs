@@ -36,6 +36,7 @@ fn main() {
         aoc_2022::day07::solve(true),
         aoc_2022::day08::solve(true),
         aoc_2022::day09::solve(true),
+        aoc_2022::day10::solve(true),
     ];
     print_stats(&stats);
 }
