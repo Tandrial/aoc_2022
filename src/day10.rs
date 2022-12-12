@@ -18,7 +18,7 @@ fn get_pixel(cycle: i32, reg_x: i32) -> String {
     }
     let diff: i32 = (reg_x - (cycle % 40)).abs();
     if diff <= 1 {
-        res += "#";
+        res += "█";
     } else {
         res += " ";
     }
