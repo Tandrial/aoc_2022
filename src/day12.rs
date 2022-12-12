@@ -30,19 +30,38 @@ fn parse(input: &str) -> (Grid, Point, Point) {
     (grid, start, end)
 }
 
-fn both(inp: (Grid, Point, Point)) -> (usize, usize) {
+fn part1_bfs(inp: &(Grid, Point, Point)) -> usize {
     let (grid, start, end) = inp;
-    let mut p1 = 0;
-    let mut p2 = 0;
+
+    let end_check = |p1: &Point, p2: &Point| p1 == p2;
+    let calc_diff = |cur: &u8, neighbor: &u8| *neighbor as i32 - *cur as i32;
+
+    bfs(grid, start, end, end_check, calc_diff)
+}
+
+fn part2_bfs(inp: &(Grid, Point, Point)) -> usize {
+    let (grid, end, start) = inp;
+
+    let end_check = |p1: &Point, _: &Point| p1.0 == 0;
+    let calc_diff = |cur: &u8, neighbor: &u8| *cur as i32 - *neighbor as i32;
+
+    bfs(grid, start, end, end_check, calc_diff)
+}
+
+fn bfs<T, F>(grid: &Grid, start: &Point, end: &Point, end_check: T, calc_diff: F) -> usize
+where
+    T: Fn(&Point, &Point) -> bool,
+    F: Fn(&u8, &u8) -> i32,
+{
+    let mut result = 0;
     let mut q = VecDeque::new();
     let mut seen = HashSet::<(i32, i32)>::new();
-    q.push_back((start, "".to_string()));
-    seen.insert(start);
+    q.push_back((*start, "".to_string()));
+    seen.insert(*start);
 
     while let Some(((next_x, next_y), path)) = q.pop_front() {
-        if (next_x, next_y) == end {
-            p1 = path.len();
-            p2 = p1 - path.chars().take_while(|c| *c == 'a').count();
+        if end_check(&(next_x, next_y), end) {
+            result = path.len();
             break;
         }
         let height = grid
@@ -55,7 +74,7 @@ fn both(inp: (Grid, Point, Point)) -> (usize, usize) {
                 .get(child_y as usize)
                 .and_then(|c| c.get(child_x as usize))
             {
-                let diff = *c_height as i32 - *height as i32;
+                let diff = calc_diff(height, c_height);
                 if diff <= 1 && !seen.contains(&(child_x, child_y)) {
                     seen.insert((child_x, child_y));
                     let mut path_new = path.clone();
@@ -65,7 +84,7 @@ fn both(inp: (Grid, Point, Point)) -> (usize, usize) {
             }
         }
     }
-    (p1, p2)
+    result
 }
 
 pub fn solve(output: bool) -> Timing {
@@ -73,8 +92,9 @@ pub fn solve(output: bool) -> Timing {
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();
+    let p1 = part1_bfs(&inp);
     let p1_time = start.elapsed() - parse_time;
-    let (p1, p2) = both(inp);
+    let p2 = part2_bfs(&inp);
     let p2_time = start.elapsed() - p1_time;
 
     if output {
