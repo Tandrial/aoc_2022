@@ -6,16 +6,10 @@ use std::{cmp::Ordering, time::Instant};
 #[grammar = "day13.pest"]
 struct PacketParser;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 enum Packet {
     List(Vec<Packet>),
     Num(i32),
-}
-
-impl PartialEq for Packet {
-    fn eq(&self, other: &Self) -> bool {
-        self == other
-    }
 }
 
 impl PartialOrd for Packet {
@@ -23,8 +17,6 @@ impl PartialOrd for Packet {
         Some(self.cmp(other))
     }
 }
-
-impl Eq for Packet {}
 
 impl Ord for Packet {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
