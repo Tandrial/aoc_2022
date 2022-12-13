@@ -1,0 +1,13 @@
+file = {
+  (expression ~ NEWLINE ~ expression ~ NEWLINE*)+
+}
+
+expression = {
+  number | list
+}
+
+list = {
+  "[" ~ expression* ~ ("," ~ expression)* ~ "]"
+}
+
+number = {  ASCII_DIGIT+ }
