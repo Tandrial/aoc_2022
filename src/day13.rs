@@ -6,10 +6,16 @@ use std::{cmp::Ordering, time::Instant};
 #[grammar = "day13.pest"]
 struct PacketParser;
 
-#[derive(Debug, Eq, PartialEq)]
+#[derive(Debug)]
 enum Packet {
     List(Vec<Packet>),
     Num(i32),
+}
+
+impl PartialEq for Packet {
+    fn eq(&self, other: &Self) -> bool {
+        self == other
+    }
 }
 
 impl PartialOrd for Packet {
@@ -17,6 +23,8 @@ impl PartialOrd for Packet {
         Some(self.cmp(other))
     }
 }
+
+impl Eq for Packet {}
 
 impl Ord for Packet {
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
@@ -99,11 +107,11 @@ pub fn solve(output: bool) -> Timing {
     let start = Instant::now();
     let mut inp = parse(raw_input);
     let parse_time = start.elapsed();
-    let p1 = part1(&inp);
+    // let p1 = part1(&inp);
     let p1_time = start.elapsed() - parse_time;
-    let p2 = part2(&mut inp);
+    // let p2 = part2(&mut inp);
     let p2_time = start.elapsed() - p1_time;
-
+    let (p1, p2) = (0, 0);
     if output {
         println!("Day 13");
         println!("\tPart 1: {}", p1);

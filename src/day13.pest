@@ -1,5 +1,5 @@
 file = {
-  (expression ~ NEWLINE ~ expression ~ NEWLINE*)+
+  (expression ~ NEWLINE+ ~ expression ~ NEWLINE*)+
 }
 
 expression = {
