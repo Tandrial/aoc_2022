@@ -6,7 +6,7 @@ use std::{cmp::Ordering, time::Instant};
 #[grammar = "day13.pest"]
 struct PacketParser;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq)]
 enum Packet {
     List(Vec<Packet>),
     Num(i32),
@@ -14,27 +14,25 @@ enum Packet {
 
 impl PartialOrd for Packet {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(self.cmp(other))
-    }
-}
-
-impl Ord for Packet {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         match (self, other) {
             // Num vs. Num
-            (Packet::Num(lhs), Packet::Num(rhs)) => lhs.cmp(rhs),
+            (Packet::Num(lhs), Packet::Num(rhs)) => Some(lhs.cmp(rhs)),
             // List vs Num
-            (Packet::Num(lhs), Packet::List(_)) => Packet::List(vec![Packet::Num(*lhs)]).cmp(other),
-            (Packet::List(_), Packet::Num(rhs)) => self.cmp(&Packet::List(vec![Packet::Num(*rhs)])),
+            (Packet::Num(lhs), Packet::List(_)) => {
+                Packet::List(vec![Packet::Num(*lhs)]).partial_cmp(other)
+            }
+            (Packet::List(_), Packet::Num(rhs)) => {
+                self.partial_cmp(&Packet::List(vec![Packet::Num(*rhs)]))
+            }
             // List vs List
             (Packet::List(lhs), Packet::List(rhs)) => {
                 for (l, r) in lhs.iter().zip(rhs.iter()) {
-                    let res = l.cmp(r);
-                    if res != Ordering::Equal {
+                    let res = l.partial_cmp(r);
+                    if res != Some(Ordering::Equal) {
                         return res;
                     }
                 }
-                lhs.len().cmp(&rhs.len())
+                Some(lhs.len().cmp(&rhs.len()))
             }
         }
     }
@@ -78,18 +76,28 @@ fn part1(inp: &[(Packet, Packet)]) -> usize {
     p1
 }
 
-fn part2(inp: &mut [(Packet, Packet)]) -> usize {
+fn part2(inp: &[(Packet, Packet)]) -> usize {
     let mark_1 = Packet::List(vec![Packet::Num(2)]);
-    let mark_2 = Packet::List(vec![Packet::Num(6)]);
-    let mut packets = vec![&mark_1, &mark_2];
-    for (l, r) in inp {
-        packets.push(l);
-        packets.push(r);
-    }
-    packets.sort();
+    let mut idx_1 = 1;
 
-    let idx_1 = 1 + packets.iter().position(|p| *p == &mark_1).unwrap_or(0);
-    let idx_2 = 1 + packets.iter().position(|p| *p == &mark_2).unwrap_or(0);
+    let mark_2 = Packet::List(vec![Packet::Num(6)]);
+    let mut idx_2 = 2;
+
+    for (l, r) in inp {
+        if l < &mark_1 {
+            idx_1 += 1
+        }
+        if r < &mark_1 {
+            idx_1 += 1
+        }
+
+        if l < &mark_2 {
+            idx_2 += 1
+        }
+        if r < &mark_2 {
+            idx_2 += 1
+        }
+    }
 
     idx_1 * idx_2
 }
@@ -97,13 +105,12 @@ fn part2(inp: &mut [(Packet, Packet)]) -> usize {
 pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day13.txt");
     let start = Instant::now();
-    let mut inp = parse(raw_input);
+    let inp = parse(raw_input);
     let parse_time = start.elapsed();
-    // let p1 = part1(&inp);
+    let p1 = part1(&inp);
     let p1_time = start.elapsed() - parse_time;
-    // let p2 = part2(&mut inp);
+    let p2 = part2(&inp);
     let p2_time = start.elapsed() - p1_time;
-    let (p1, p2) = (0, 0);
     if output {
         println!("Day 13");
         println!("\tPart 1: {}", p1);
