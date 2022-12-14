@@ -1,5 +1,8 @@
 use crate::Timing;
+use grid::Grid;
 use std::time::Instant;
+
+type Path = Vec<(usize, usize)>;
 
 fn get_range_iter(start: usize, end: usize) -> impl Iterator<Item = usize> {
     if start < end {
@@ -8,61 +11,91 @@ fn get_range_iter(start: usize, end: usize) -> impl Iterator<Item = usize> {
         end..=start
     }
 }
-// Sand falls at (500, 0) with a max height of 175 (highest + 2 [part2]) the
-// max width of the forming pyramid 350, so to save memory we can shift the
-// left most point to (0, 175), which means the drop point is at (175, 0)
-// 500 - 175 = 325, so shift everything by 325 with a max size of 350
 
-fn parse(input: &str) -> ([[u8; 350]; 175], usize) {
+fn parse(input: &str) -> (Grid<u8>, usize) {
     // 0 == empty,  1 == wall, 2 == sand
-    let mut grid = [[0u8; 350]; 175];
-    let mut max_y = 0;
-    for line in input.lines() {
-        let points: Vec<(usize, usize)> = line
-            .split(" -> ")
-            .map(|p| {
-                let (x, y) = p.split_once(',').unwrap();
-                (x.parse::<usize>().unwrap(), y.parse::<usize>().unwrap())
-            })
-            .collect();
-        for w in points.windows(2) {
+    let mut height = 0;
+    let mut width = 0;
+    // Parse the input into a Vec of Paths
+    let paths: Vec<Path> = input
+        .lines()
+        .map(|line| {
+            let points: Vec<(usize, usize)> = line
+                .split(" -> ")
+                .map(|p| {
+                    let (x, y) = p.split_once(',').unwrap();
+                    (x.parse::<usize>().unwrap(), y.parse::<usize>().unwrap())
+                })
+                .collect();
+            points
+        })
+        .collect();
+    // Find the size of the input
+    for path in &paths {
+        for w in path.windows(2) {
+            let (p1_x, p1_y) = w[0];
+            let (p2_x, p2_y) = w[1];
+            width = width.max(p1_x.max(p2_x));
+            height = height.max(p1_y.max(p2_y));
+        }
+    }
+
+    // Sand falls at (500, 0) with a max height of 175 (highest + 2 [part2]) the
+    // max width of the forming pyramid 350, so to save memory we can shift the
+    // left most point to (0, 175), which means the drop point is at (175, 0)
+    // 500 - 175 = 325, so shift everything by 500 - (height + 2)
+
+    let shift = 500 - (height + 2);
+    let mut grid: Grid<u8> = Grid::new(height + 2, width + (width - height) - shift);
+    // Insert the points along the Paths into the grid
+    for path in &paths {
+        for w in path.windows(2) {
             let (p1_x, p1_y) = w[0];
             let (p2_x, p2_y) = w[1];
             get_range_iter(p1_x, p2_x).for_each(|x| {
                 get_range_iter(p1_y, p2_y).for_each(|y| {
-                    max_y = max_y.max(y);
-                    grid[y][x - 325] = 1u8;
+                    grid[y][x - shift] = 1u8;
                 });
             });
         }
     }
-    (grid, max_y + 2)
+    (grid, height)
 }
 
 // Part 1 gets a clone of the grid
-fn part1(data: &([[u8; 350]; 175], usize)) -> usize {
-    let (inp, _) = data;
-    both(&mut inp.clone(), usize::MAX)
+// fn part1(data: &([[u8; 350]; 175], usize)) -> usize {
+fn part1(data: &(Grid<u8>, usize)) -> usize {
+    let (inp, max_y) = data;
+    // initial sand_drop:
+    // old - shift
+    // 500 - (500 - (max_y + 2)
+    // 500 - 500 + max_y + 2
+    both(&mut inp.clone(), usize::MAX, max_y + 2)
 }
 
 // Part 2 can work with the original grid
-fn part2(data: &([[u8; 350]; 175], usize)) -> usize {
-    let (mut inp, max_y) = data;
-    both(&mut inp, *max_y)
+// fn part2(data: &([[u8; 350]; 175], usize)) -> usize {
+fn part2(data: &(Grid<u8>, usize)) -> usize {
+    let (inp, max_y) = data;
+    // initial sand_drop:
+    // old - shift
+    // 500 - (500 - (max_y + 2)
+    // 500 - 500 + max_y + 2
+    both(&mut inp.clone(), *max_y, max_y + 2)
 }
 
-fn both(inp: &mut [[u8; 350]; 175], max_y: usize) -> usize {
+fn both(inp: &mut Grid<u8>, max_y: usize, initial_x: usize) -> usize {
     let mut res = 0;
     loop {
-        let mut sand_x = 500 - 325;
+        let mut sand_x = initial_x;
         let mut sand_y = 0;
         loop {
-            if sand_y + 1 >= max_y {
+            if sand_y > max_y {
                 // Sand hit the floor (part 2)
                 inp[sand_y][sand_x] = 2u8;
                 res += 1;
                 break;
-            } else if sand_y >= inp.len() - 1 {
+            } else if sand_y >= inp.size().0 - 1 {
                 // Sand fell into the abyss (part 1)
                 return res;
             } else if inp[sand_y + 1][sand_x] == 0u8 {
