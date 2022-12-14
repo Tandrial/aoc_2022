@@ -8,12 +8,14 @@ fn get_range_iter(start: usize, end: usize) -> impl Iterator<Item = usize> {
         end..=start
     }
 }
+// Sand falls at (500, 0) with a max height of 175 (highest + 2 [part2]) the
+// max width of the forming pyramid 350, so to save memory we can shift the
+// left most point to (0, 175), which means the drop point is at (175, 0)
+// 500 - 175 = 325, so shift everything by 325 with a max size of 350
 
-fn parse(input: &str) -> ([[u8; 675]; 185], usize) {
-    // 0 == empty
-    // 1 == wall
-    // 2 == sand
-    let mut grid = [[0u8; 675]; 185];
+fn parse(input: &str) -> ([[u8; 350]; 175], usize) {
+    // 0 == empty,  1 == wall, 2 == sand
+    let mut grid = [[0u8; 350]; 175];
     let mut max_y = 0;
     for line in input.lines() {
         let points: Vec<(usize, usize)> = line
@@ -29,7 +31,7 @@ fn parse(input: &str) -> ([[u8; 675]; 185], usize) {
             get_range_iter(p1_x, p2_x).for_each(|x| {
                 get_range_iter(p1_y, p2_y).for_each(|y| {
                     max_y = max_y.max(y);
-                    grid[y][x] = 1u8;
+                    grid[y][x - 325] = 1u8;
                 });
             });
         }
@@ -37,20 +39,22 @@ fn parse(input: &str) -> ([[u8; 675]; 185], usize) {
     (grid, max_y + 2)
 }
 
-fn part1(data: &([[u8; 675]; 185], usize)) -> usize {
+// Part 1 gets a clone of the grid
+fn part1(data: &([[u8; 350]; 175], usize)) -> usize {
     let (inp, _) = data;
     both(&mut inp.clone(), usize::MAX)
 }
 
-fn part2(data: &([[u8; 675]; 185], usize)) -> usize {
+// Part 2 can work with the original grid
+fn part2(data: &([[u8; 350]; 175], usize)) -> usize {
     let (mut inp, max_y) = data;
     both(&mut inp, *max_y)
 }
 
-fn both(inp: &mut [[u8; 675]; 185], max_y: usize) -> usize {
+fn both(inp: &mut [[u8; 350]; 175], max_y: usize) -> usize {
     let mut res = 0;
     loop {
-        let mut sand_x = 500;
+        let mut sand_x = 500 - 325;
         let mut sand_y = 0;
         loop {
             if sand_y + 1 >= max_y {
