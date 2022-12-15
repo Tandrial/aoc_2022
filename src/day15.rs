@@ -35,11 +35,6 @@ fn part1(inp: &[(Point, i64)]) -> i64 {
     max_x - min_x
 }
 
-/* SAM
-small hint: A hint would be that you can loop over x or y but not both.
-big hint: Merging ranges on each row is not too hard and is much faster than looping
-          over every range in that row and marking the corresponding points as impossible.
-*/
 fn part2(inp: &[(Point, i64)]) -> i64 {
     // Since there is exactly ONE possible position it HAS to be d + 1 distance
     // from a sensor, otherwise if the beacon would be d + 2 away from a sensor
