@@ -77,7 +77,7 @@ fn part2(inp: &[(Point, i64)]) -> i64 {
     let mut ups = HashSet::<i64>::new();
     let mut downs = HashSet::<i64>::new();
 
-    for &(s, d) in inp {
+    for (s, d) in inp {
         ups.insert(s.1 - s.0 + d + 1);
         ups.insert(s.1 - s.0 - d - 1);
         downs.insert(s.0 + s.1 + d + 1);
@@ -85,21 +85,21 @@ fn part2(inp: &[(Point, i64)]) -> i64 {
     }
 
     // The beacon has to be at an intersection of an up and a down line so we just
-    // have to check these points and check if they are fare enough way from each sensor
+    // have to check these points and check if they are far enough away from each sensor
 
     // The intersection of 2 lines f(x) = x + a and g(x) = -x + b is at ((b - a) / 2, (b + a) / 2)
 
     for up in ups.iter() {
-        for &down in downs.iter() {
+        for down in downs.iter() {
             let point = ((down - up) / 2, (down + up) / 2);
             if point.0 < 0 || point.1 < 0 || point.0 > 4000000 || point.1 > 4000000 {
                 continue;
             }
             if inp
                 .iter()
-                .all(|&(s, d)| (s.0 - point.0).abs() + (s.1 - point.1).abs() >= d)
+                .all(|(s, d)| (s.0 - point.0).abs() + (s.1 - point.1).abs() >= *d)
             {
-                return point.0 as i64 * 4000000 + point.1 as i64;
+                return point.0 * 4000000 + point.1;
             }
         }
     }
