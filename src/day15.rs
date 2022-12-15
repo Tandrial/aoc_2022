@@ -1,6 +1,6 @@
 use crate::Timing;
 use regex_macro::regex;
-use std::time::Instant;
+use std::{collections::HashSet, time::Instant};
 
 type Point = (i64, i64);
 
@@ -36,6 +36,7 @@ fn part1(inp: &[(Point, i64)]) -> i64 {
 }
 
 fn part2(inp: &[(Point, i64)]) -> i64 {
+    /*
     // Since there is exactly ONE possible position it HAS to be d + 1 distance
     // from a sensor, otherwise if the beacon would be d + 2 away from a sensor
     // there could be more beacons d + 1 away from that sensor
@@ -59,6 +60,46 @@ fn part2(inp: &[(Point, i64)]) -> i64 {
                 {
                     return ring_x as i64 * 4000000 + ring_y as i64;
                 }
+            }
+        }
+    } */
+
+    // Building on the above, there are actually just a couple of actually interesting
+    // points. We only care about if boundaries intersect at the edges and not the whole line
+
+    // The boundaries of the scanners are formed by 4 lines and all have the same slope
+    // 2 with slope 1 and 2 with slope -1. All that differs is the offset of the y axis
+    // The missing beacon HAS to be just outside of those line, by either +1 or -1
+
+    // ups:   f(x) =  x + (s_x - s_y +- (d + 1)) =  x + a
+    // downs: g(x) = -x + (x_y - s_y +- (d + 1)) = -x + b
+
+    let mut ups = HashSet::<i64>::new();
+    let mut downs = HashSet::<i64>::new();
+
+    for &(s, d) in inp {
+        ups.insert(s.1 - s.0 + d + 1);
+        ups.insert(s.1 - s.0 - d - 1);
+        downs.insert(s.0 + s.1 + d + 1);
+        downs.insert(s.0 + s.1 - d - 1);
+    }
+
+    // The beacon has to be at an intersection of an up and a down line so we just
+    // have to check these points and check if they are fare enough way from each sensor
+
+    // The intersection of 2 lines f(x) = x + a and g(x) = -x + b is at ((b - a) / 2, (b + a) / 2)
+
+    for up in ups.iter() {
+        for &down in downs.iter() {
+            let point = ((down - up) / 2, (down + up) / 2);
+            if point.0 < 0 || point.1 < 0 || point.0 > 4000000 || point.1 > 4000000 {
+                continue;
+            }
+            if inp
+                .iter()
+                .all(|&(s, d)| (s.0 - point.0).abs() + (s.1 - point.1).abs() >= d)
+            {
+                return point.0 as i64 * 4000000 + point.1 as i64;
             }
         }
     }
