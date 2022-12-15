@@ -1,6 +1,5 @@
-use std::{ops::Add, time::Duration};
-
 use aoc_2022::Timing;
+use std::{ops::Add, time::Duration};
 
 pub fn print_stats(stats: &[Timing]) {
     let mut total_parse = Duration::new(0, 0);
@@ -23,6 +22,10 @@ pub fn print_stats(stats: &[Timing]) {
         aoc_2022::dur_string(&total_parse.add(total_p1).add(total_p2))
     );
     println!("{}", line);
+    println!(
+        "\n`{}s` remaining",
+        (Duration::new(1, 0) - total_parse.add(total_p1).add(total_p2)).as_secs_f32()
+    )
 }
 
 fn main() {
@@ -40,6 +43,7 @@ fn main() {
         aoc_2022::day12::solve(true),
         aoc_2022::day13::solve(true),
         aoc_2022::day14::solve(true),
+        aoc_2022::day15::solve(true),
     ];
     print_stats(&stats);
 }
