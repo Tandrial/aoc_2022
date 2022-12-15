@@ -1,8 +1,7 @@
+use crate::Timing;
 use byteorder::{BigEndian, ReadBytesExt};
 use std::io::Cursor;
 use std::time::Instant;
-
-use crate::Timing;
 
 fn parse(inp: &str) -> Vec<(char, char)> {
     let mut games: Vec<(char, char)> = Vec::new();

@@ -1,6 +1,5 @@
-use std::time::Instant;
-
 use crate::Timing;
+use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<(&str, i32)> {
     inp.lines()

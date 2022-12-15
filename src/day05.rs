@@ -1,6 +1,5 @@
-use std::time::Instant;
-
 use crate::{index_twice, Timing};
+use std::time::Instant;
 
 type CrateStack = Vec<char>;
 type Move = (usize, usize, usize);

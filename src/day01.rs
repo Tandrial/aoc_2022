@@ -1,6 +1,5 @@
-use std::time::Instant;
-
 use crate::Timing;
+use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<i64> {
     let mut total_count: Vec<i64> = Vec::new();

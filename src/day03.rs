@@ -1,6 +1,5 @@
-use std::time::Instant;
-
 use crate::Timing;
+use std::time::Instant;
 
 fn parse(inp: &str) -> Vec<(&str, (&str, &str))> {
     let mut backpacks: Vec<(&str, (&str, &str))> = Vec::new();

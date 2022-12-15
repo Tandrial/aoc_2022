@@ -41,9 +41,10 @@ fn parse(input: &str) -> (Grid<u8>, usize) {
     }
 
     // Sand falls at (500, 0) with a max height of 175 (highest + 2 [part2]) the
-    // max width of the forming pyramid 350, so to save memory we can shift the
-    // left most point to (0, 175), which means the drop point is at (175, 0)
-    // 500 - 175 = 325, so shift everything by 500 - (height + 2)
+    // max width of the forming pyramid 350 (45° slope) one down ==> one to the
+    // left/right so to save memory we can shift the left most point to (0, 175)
+    // which means the drop point is at (175, 0): 500 - 175 = 325, so shift everything
+    // by 500 - (height + 2)
 
     let shift = 500 - (height + 2);
     let mut grid: Grid<u8> = Grid::new(height + 2, width + (width - height) - shift);
@@ -77,10 +78,6 @@ fn part1(data: &(Grid<u8>, usize)) -> usize {
 // fn part2(data: &([[u8; 350]; 175], usize)) -> usize {
 fn part2(data: &(Grid<u8>, usize)) -> usize {
     let (inp, max_y) = data;
-    // initial sand_drop:
-    // old - shift
-    // 500 - (500 - (max_y + 2)
-    // 500 - 500 + max_y + 2
     both(&mut inp.clone(), *max_y, max_y + 2)
 }
 

@@ -1,6 +1,5 @@
-use std::{ops::RangeInclusive, time::Instant};
-
 use crate::Timing;
+use std::{ops::RangeInclusive, time::Instant};
 
 fn get_range(line: &str) -> Option<RangeInclusive<u32>> {
     let mut iter = line.split('-');
