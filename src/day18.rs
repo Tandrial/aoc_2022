@@ -50,10 +50,11 @@ fn part2(inp: &HashSet<Point>) -> i64 {
     let z_max = inp.iter().map(|(_, _, z)| z).max().unwrap() + 1;
 
     let mut q = VecDeque::new();
-    let mut seen = HashSet::<(i64, i64, i64)>::new();
+    let mut seen = HashSet::<Point>::new();
     let start = (x_min, y_min, z_min);
     q.push_back(start);
     seen.insert(start);
+    let mut result = 0;
 
     while let Some((x, y, z)) = q.pop_front() {
         for (dx, dy, dz) in &[
@@ -65,35 +66,18 @@ fn part2(inp: &HashSet<Point>) -> i64 {
             (0, 0, -1),
         ] {
             let next = (x + dx, y + dy, z + dz);
-            if seen.contains(&next) {
-                continue;
-            }
-            seen.insert(next);
-            if !inp.contains(&next) & (x_min..=x_max).contains(&next.0)
+            if (x_min..=x_max).contains(&next.0)
                 && (y_min..=y_max).contains(&next.1)
                 && (z_min..=z_max).contains(&next.2)
             {
-                q.push_back(next);
+                if inp.contains(&next) {
+                    result += 1
+                } else if !seen.contains(&next) {
+                    seen.insert(next);
+                    q.push_back(next);
+                }
             }
         }
-    }
-    let mut result = 0;
-    for (x, y, z) in inp.iter() {
-        let mut sides_touching_water: i64 = 0;
-        for (dx, dy, dz) in &[
-            (1, 0, 0),
-            (-1, 0, 0),
-            (0, 1, 0),
-            (0, -1, 0),
-            (0, 0, 1),
-            (0, 0, -1),
-        ] {
-            let next = (x + dx, y + dy, z + dz);
-            if seen.contains(&next) && !inp.contains(&next) {
-                sides_touching_water += 1;
-            }
-        }
-        result += sides_touching_water;
     }
     result
 }

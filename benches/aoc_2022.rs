@@ -11,6 +11,7 @@ fn bench_all() {
     aoc_2022::day08::solve(false);
     aoc_2022::day09::solve(false);
     aoc_2022::day10::solve(false);
+    // aoc_2022::day11::solve(false);
     aoc_2022::day12::solve(false);
     aoc_2022::day13::solve(false);
     aoc_2022::day14::solve(false);
@@ -73,6 +74,9 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("AoC 2022 - Day16", |b| {
         b.iter(|| aoc_2022::day16::solve(false))
     });
+    // c.bench_function("AoC 2022 - Day17", |b| {
+    //     b.iter(|| aoc_2022::day17::solve(false))
+    // });
     c.bench_function("AoC 2022 - Day18", |b| {
         b.iter(|| aoc_2022::day18::solve(false))
     });

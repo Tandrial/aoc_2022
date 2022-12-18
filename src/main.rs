@@ -40,6 +40,7 @@ fn main() {
         aoc_2022::day08::solve(true),
         aoc_2022::day09::solve(true),
         aoc_2022::day10::solve(true),
+        // aoc_2022::day11::solve(true),
         aoc_2022::day12::solve(true),
         aoc_2022::day13::solve(true),
         aoc_2022::day14::solve(true),
