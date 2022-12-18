@@ -46,7 +46,7 @@ fn main() {
         aoc_2022::day15::solve(true),
         aoc_2022::day16::solve(true),
         // aoc_2022::day17::solve(true),
-        // aoc_2022::day18::solve(true),
+        aoc_2022::day18::solve(true),
         // aoc_2022::day19::solve(true),
         // aoc_2022::day20::solve(true),
         // aoc_2022::day21::solve(true),
