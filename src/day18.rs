@@ -54,7 +54,7 @@ fn part2(inp: &HashSet<Point>) -> i64 {
     let start = (x_min, y_min, z_min);
     q.push_back(start);
     seen.insert(start);
-    let mut result = 0;
+    let mut total_surfaces = 0;
 
     while let Some((x, y, z)) = q.pop_front() {
         for (dx, dy, dz) in &[
@@ -71,7 +71,7 @@ fn part2(inp: &HashSet<Point>) -> i64 {
                 && (z_min..=z_max).contains(&next.2)
             {
                 if inp.contains(&next) {
-                    result += 1
+                    total_surfaces += 1
                 } else if !seen.contains(&next) {
                     seen.insert(next);
                     q.push_back(next);
@@ -79,7 +79,7 @@ fn part2(inp: &HashSet<Point>) -> i64 {
             }
         }
     }
-    result
+    total_surfaces
 }
 
 pub fn solve(output: bool) -> Timing {
