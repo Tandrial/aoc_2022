@@ -168,7 +168,7 @@ fn eval_blueprint(b: &Blueprint, max_time: i64) -> i64 {
         }
 
         // If we have a lot of ore waiting is probably not a good idea
-        if s.ore < 3 * max_ore_cost {
+        if s.ore < 2 * max_ore_cost {
             q.push_back((cur_time + 1, mine_resources(s)));
         }
     }
