@@ -11,16 +11,16 @@ fn bench_all() {
     aoc_2022::day08::solve(false);
     aoc_2022::day09::solve(false);
     aoc_2022::day10::solve(false);
-    // aoc_2022::day11::solve(false);
+    aoc_2022::day11::solve(false);
     aoc_2022::day12::solve(false);
     aoc_2022::day13::solve(false);
     aoc_2022::day14::solve(false);
     aoc_2022::day15::solve(false);
     aoc_2022::day16::solve(false);
-    // aoc_2022::day17::solve(false);
+    aoc_2022::day17::solve(false);
     aoc_2022::day18::solve(false);
     aoc_2022::day19::solve(false);
-    // aoc_2022::day20::solve(false);
+    aoc_2022::day20::solve(false);
     // aoc_2022::day21::solve(false);
     // aoc_2022::day22::solve(false);
     // aoc_2022::day23::solve(false);
@@ -59,6 +59,9 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("AoC 2022 - Day10", |b| {
         b.iter(|| aoc_2022::day10::solve(false))
     });
+    c.bench_function("AoC 2022 - Day11", |b| {
+        b.iter(|| aoc_2022::day10::solve(false))
+    });
     c.bench_function("AoC 2022 - Day12", |b| {
         b.iter(|| aoc_2022::day12::solve(false))
     });
@@ -74,18 +77,18 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("AoC 2022 - Day16", |b| {
         b.iter(|| aoc_2022::day16::solve(false))
     });
-    // c.bench_function("AoC 2022 - Day17", |b| {
-    //     b.iter(|| aoc_2022::day17::solve(false))
-    // });
+    c.bench_function("AoC 2022 - Day17", |b| {
+        b.iter(|| aoc_2022::day17::solve(false))
+    });
     c.bench_function("AoC 2022 - Day18", |b| {
         b.iter(|| aoc_2022::day18::solve(false))
     });
     c.bench_function("AoC 2022 - Day19", |b| {
         b.iter(|| aoc_2022::day19::solve(false))
     });
-    // c.bench_function("AoC 2022 - Day20", |b| {
-    //     b.iter(|| aoc_2022::day20::solve(false))
-    // });
+    c.bench_function("AoC 2022 - Day20", |b| {
+        b.iter(|| aoc_2022::day20::solve(false))
+    });
     // c.bench_function("AoC 2022 - Day21", |b| {
     //     b.iter(|| aoc_2022::day21::solve(false))
     // });

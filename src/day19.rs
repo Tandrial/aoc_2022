@@ -131,7 +131,7 @@ fn eval_blueprint(b: &Blueprint, max_time: i64) -> i64 {
         // If we can build an obsidian bot
 
         // AND we have less than the cost of a geode bot build one
-        //       Since we can only build one bot per turn there is no reason to get more the the geode bot cost
+        //       Since we can only build one bot per turn there is no reason to get more than the geode bot cost
 
         if s.obsidian_bots < b.geode_bot_obsidian_cost
             && s.ore >= b.obsidian_bot_ore_cost
@@ -145,30 +145,35 @@ fn eval_blueprint(b: &Blueprint, max_time: i64) -> i64 {
             continue;
         }
 
+        let mut nothing_built = true;
+
         // If we can build a clay bot
 
         // AND we have less than the cost of a obsidian bot build one
-        //       Since we can only build one bot per turn there is no reason to get more the the obsidian bot cost
+        //       Since we can only build one bot per turn there is no reason to get more than the obsidian bot cost
 
         if s.clay_bots < b.obsidian_bot_clay_cost && s.ore >= b.clay_bot_ore_cost {
             let mut new_state = mine_resources(s);
             new_state.ore -= b.clay_bot_ore_cost;
             new_state.clay_bots += 1;
             q.push_back((cur_time + 1, new_state));
+            nothing_built = false;
         }
 
         // If we can build an ore bot AND we have less than the max cost off all bots build one
-        // Since we can only build one bot per turn there is no reason to get more the max(ore_costs)
-        // ore per turn
+        // Since we can only build one bot per turn there is no reason to get more the max(ore_costs) many
+
         if s.ore_bots < max_ore_cost && s.ore >= b.ore_bot_ore_cost {
             let mut new_state = mine_resources(s);
             new_state.ore -= b.ore_bot_ore_cost;
             new_state.ore_bots += 1;
             q.push_back((cur_time + 1, new_state));
+            nothing_built = false;
         }
 
-        // If we have a lot of ore waiting is probably not a good idea
-        if s.ore < 2 * max_ore_cost {
+        // If haven't built anything we wait until there is enough resources
+        // OR If we have a lot of ore waiting is probably not a good idea
+        if nothing_built || s.ore < 2 * max_ore_cost {
             q.push_back((cur_time + 1, mine_resources(s)));
         }
     }
