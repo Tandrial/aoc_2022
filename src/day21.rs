@@ -2,8 +2,8 @@ use crate::Timing;
 use std::{collections::HashMap, time::Instant};
 
 #[derive(Debug, PartialEq)]
-enum Monkey {
-    Eq((String, u8, String)),
+enum Monkey<'a> {
+    Eq((&'a str, u8, &'a str)),
     Num(f64),
 }
 
@@ -14,10 +14,7 @@ fn parse(input: &str) -> HashMap<&str, Monkey> {
         let (name, eq) = line.split_once(": ").unwrap();
         if eq.contains(' ') {
             let eqq: Vec<&str> = eq.split(' ').collect();
-            res.insert(
-                name,
-                Monkey::Eq((eqq[0].to_string(), eqq[1].as_bytes()[0], eqq[2].to_string())),
-            );
+            res.insert(name, Monkey::Eq((eqq[0], eqq[1].as_bytes()[0], eqq[2])));
         } else {
             res.insert(name, Monkey::Num(eq.parse().unwrap()));
         }
@@ -37,11 +34,11 @@ fn calc(inp: &HashMap<&str, Monkey>) -> (f64, f64) {
                     look_up.insert(*name, *val);
                 }
                 Monkey::Eq((lhs, op, rhs)) => {
-                    if look_up.contains_key(lhs.as_str()) && look_up.contains_key(rhs.as_str()) {
-                        let l = look_up.get(lhs.as_str()).unwrap();
-                        let r = look_up.get(rhs.as_str()).unwrap();
+                    if look_up.contains_key(lhs) && look_up.contains_key(rhs) {
+                        let l = *look_up.get(lhs).unwrap();
+                        let r = *look_up.get(rhs).unwrap();
                         if *name == "root" {
-                            return (*l, *r);
+                            return (l, r);
                         }
                         match &op {
                             b'+' => look_up.insert(name, l + r),

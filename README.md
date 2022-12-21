@@ -54,7 +54,7 @@ AoC 2022 - Day16        time:   [168.37 ms 168.90 ms 169.46 ms]
 AoC 2022 - Day17        time:   [143.80 ms 144.07 ms 144.35 ms]
 AoC 2022 - Day18        time:   [4.1492 ms 4.1654 ms 4.1880 ms]
 AoC 2022 - Day20        time:   [72.320 ms 72.483 ms 72.682 ms]
-AoC 2022 - Day21        time:   [2.0344 ms 2.0398 ms 2.0459 ms]
+AoC 2022 - Day21        time:   [1.7750 ms 1.7797 ms 1.7850 ms]
 AoC 2022 - Day22        time:   missing
 AoC 2022 - Day23        time:   missing
 AoC 2022 - Day24        time:   missing
