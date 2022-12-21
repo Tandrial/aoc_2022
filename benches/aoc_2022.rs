@@ -21,11 +21,11 @@ fn bench_all() {
     aoc_2022::day18::solve(false);
     aoc_2022::day19::solve(false);
     aoc_2022::day20::solve(false);
-    // aoc_2022::day21::solve(false);
-    // aoc_2022::day22::solve(false);
-    // aoc_2022::day23::solve(false);
-    // aoc_2022::day24::solve(false);
-    // aoc_2022::day25::solve(false);
+    aoc_2022::day21::solve(false);
+    aoc_2022::day22::solve(false);
+    aoc_2022::day23::solve(false);
+    aoc_2022::day24::solve(false);
+    aoc_2022::day25::solve(false);
 }
 
 fn criterion_benchmark(c: &mut Criterion) {
@@ -89,21 +89,21 @@ fn criterion_benchmark(c: &mut Criterion) {
     c.bench_function("AoC 2022 - Day20", |b| {
         b.iter(|| aoc_2022::day20::solve(false))
     });
-    // c.bench_function("AoC 2022 - Day21", |b| {
-    //     b.iter(|| aoc_2022::day21::solve(false))
-    // });
-    // c.bench_function("AoC 2022 - Day22", |b| {
-    //     b.iter(|| aoc_2022::day22::solve(false))
-    // });
-    // c.bench_function("AoC 2022 - Day23", |b| {
-    //     b.iter(|| aoc_2022::day23::solve(false))
-    // });
-    // c.bench_function("AoC 2022 - Day24", |b| {
-    //     b.iter(|| aoc_2022::day24::solve(false))
-    // });
-    // c.bench_function("AoC 2022 - Day25", |b| {
-    //     b.iter(|| aoc_2022::day25::solve(false))
-    // });
+    c.bench_function("AoC 2022 - Day21", |b| {
+        b.iter(|| aoc_2022::day21::solve(false))
+    });
+    c.bench_function("AoC 2022 - Day22", |b| {
+        b.iter(|| aoc_2022::day22::solve(false))
+    });
+    c.bench_function("AoC 2022 - Day23", |b| {
+        b.iter(|| aoc_2022::day23::solve(false))
+    });
+    c.bench_function("AoC 2022 - Day24", |b| {
+        b.iter(|| aoc_2022::day24::solve(false))
+    });
+    c.bench_function("AoC 2022 - Day25", |b| {
+        b.iter(|| aoc_2022::day25::solve(false))
+    });
     c.bench_function("AoC 2022 - All", |b| b.iter(bench_all));
 }
 
