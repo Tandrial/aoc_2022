@@ -13,8 +13,7 @@ fn parse(input: &str) -> (Grid, Point, Point) {
     let mut end = (0, 0);
     let mut grid = std::iter::repeat(vec![]).take(*height).collect::<Vec<_>>();
     for (idy, line) in input.lines().enumerate() {
-        let mut idx: usize = 0;
-        for &num in line.as_bytes() {
+        for (idx, &num) in line.as_bytes().iter().enumerate() {
             if num == b'S' {
                 start = (idx as i32, idy as i32);
                 grid.get_mut(idy).unwrap().push(b'a');
@@ -24,7 +23,6 @@ fn parse(input: &str) -> (Grid, Point, Point) {
             } else {
                 grid.get_mut(idy).unwrap().push(num);
             }
-            idx += 1;
         }
     }
     (grid, start, end)

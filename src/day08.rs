@@ -24,7 +24,7 @@ fn both(inp: &Vec<Vec<u8>>) -> (i64, i64) {
             for (dx, dy) in &[(0, -1i64), (0, 1), (1, 0), (-1i64, 0)] {
                 let mut view_distance = 0;
                 let mut blocked = false;
-                let (mut cur_x, mut cur_y) = (x as i64 + dx, y as i64 + dy);
+                let (mut cur_x, mut cur_y) = (x + dx, y + dy);
                 while (0..w).contains(&cur_x) && (0..h).contains(&cur_y) {
                     view_distance += 1;
                     if inp[cur_y as usize][cur_x as usize] >= inp[y as usize][x as usize] {
