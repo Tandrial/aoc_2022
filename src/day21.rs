@@ -1,10 +1,10 @@
 use crate::Timing;
-use std::{cmp::Ordering, collections::HashMap, time::Instant};
+use std::{collections::HashMap, time::Instant};
 
 #[derive(Debug, PartialEq)]
 enum Monkey {
     Eq((String, u8, String)),
-    Num(i64),
+    Num(f64),
 }
 
 fn parse(input: &str) -> HashMap<&str, Monkey> {
@@ -25,8 +25,8 @@ fn parse(input: &str) -> HashMap<&str, Monkey> {
     res
 }
 
-fn calc(inp: &HashMap<&str, Monkey>) -> (i64, i64) {
-    let mut look_up = HashMap::<&str, i64>::new();
+fn calc(inp: &HashMap<&str, Monkey>) -> (f64, f64) {
+    let mut look_up = HashMap::<&str, f64>::new();
 
     let mut vec = Vec::from_iter(inp.iter());
     let mut vec2: Vec<(&&str, &Monkey)> = vec![];
@@ -64,43 +64,27 @@ fn calc(inp: &HashMap<&str, Monkey>) -> (i64, i64) {
 
 fn part1(inp: &HashMap<&str, Monkey>) -> i64 {
     let (l, r) = calc(inp);
-    l + r
+    (l + r) as i64
 }
 
 fn part2(inp: &mut HashMap<&str, Monkey>) -> i64 {
-    let (mut l, mut r) = calc(inp);
-    while l - r > 0 {
-        let hum = inp.get("humn").unwrap();
-        match hum {
-            Monkey::Num(val) => inp.insert("humn", Monkey::Num(val * 1000000)),
-            _ => unreachable!(),
-        };
-        (l, r) = calc(inp);
-    }
-    let mut low = 0;
-    let mut high = match inp.get("humn").unwrap() {
-        Monkey::Num(val) => *val,
-        _ => unreachable!(),
-    };
+    // Since the function being built is linear we can simply interpolate between two points
+    // and solve for x == 0, pick 2 points very far away so make sure we round to the correct point
 
-    while l - r != 0 {
-        let human = low + ((high - low) / 2);
-        inp.insert("humn", Monkey::Num(human));
+    let x1 = 100_000_000_000f64;
+    inp.insert("humn", Monkey::Num(x1));
+    let (l, r) = calc(inp);
+    let r1 = l - r;
 
-        (l, r) = calc(inp);
-        match l.cmp(&r) {
-            Ordering::Greater => {
-                low = human;
-            }
-            Ordering::Less => {
-                high = human;
-            }
-            Ordering::Equal => {
-                return human;
-            }
-        }
-    }
-    unreachable!()
+    let x2 = -x1;
+    inp.insert("humn", Monkey::Num(x2));
+    let (l2, r2) = calc(inp);
+    let r2 = l2 - r2;
+
+    // Two point form
+    let res = (x1 * r2 - x2 * r1) / (r2 - r1);
+
+    res.round() as i64
 }
 
 pub fn solve(output: bool) -> Timing {
