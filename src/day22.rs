@@ -63,27 +63,27 @@ fn parse(input: &str) -> (Grid<char>, Vec<Move>) {
     }
 
     let inst_arr = inst.as_bytes();
+    let mut inst_pos = 0usize;
 
     let mut moves: Vec<Move> = vec![];
-    let mut move_pos = 0usize;
 
-    while move_pos < inst_arr.len() {
+    while inst_pos < inst_arr.len() {
         let mut num = 0;
-        while move_pos < inst.len() && inst_arr[move_pos].is_ascii_digit() {
+        while inst_pos < inst.len() && inst_arr[inst_pos].is_ascii_digit() {
             num *= 10;
-            num += inst_arr[move_pos] - b'0';
-            move_pos += 1;
+            num += inst_arr[inst_pos] - b'0';
+            inst_pos += 1;
         }
         moves.push(Move::Walk(num));
-        if move_pos >= inst.len() {
+        if inst_pos >= inst.len() {
             break;
         }
-        match inst_arr[move_pos] {
+        match inst_arr[inst_pos] {
             b'R' => moves.push(Move::TurnRight),
             b'L' => moves.push(Move::TurnLeft),
             _ => unreachable!(),
         }
-        move_pos += 1;
+        inst_pos += 1;
     }
 
     (grid, moves)
@@ -146,6 +146,7 @@ fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
                     let (x_off, y_off) = facing.get_move();
                     let (mut x_new, mut y_new) = (x_pos as i32 + x_off, y_pos as i32 + y_off);
                     let mut facing_new = facing;
+
                     if !(0..width).contains(&(x_new as usize))
                         || !(0..height).contains(&(y_new as usize))
                         || !".#".contains(maze[y_new as usize][x_new as usize])
@@ -190,8 +191,8 @@ fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
                             3 => match facing {
                                 Direction::Right => {
                                     // Ends up at face 2
-                                    y_new = 49;
                                     x_new = 50 + y_pos as i32;
+                                    y_new = 49;
                                     facing_new = Direction::Up;
                                 }
                                 Direction::Left => {
@@ -241,8 +242,8 @@ fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
                                 }
                                 Direction::Down => {
                                     // End up at face 2
-                                    y_new = 0;
                                     x_new = x_pos as i32 + 100;
+                                    y_new = 0;
                                     facing_new = Direction::Down;
                                 }
                                 Direction::Left => {
