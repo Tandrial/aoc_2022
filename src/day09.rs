@@ -1,5 +1,8 @@
 use crate::{index_twice, Timing};
-use std::{collections::HashSet, time::Instant};
+use std::{
+    collections::HashSet,
+    time::{Duration, Instant},
+};
 
 fn parse(inp: &str) -> Vec<(char, u8)> {
     inp.lines()
@@ -54,7 +57,7 @@ pub fn solve(output: bool) -> Timing {
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();
-    let p1_time = start.elapsed() - parse_time;
+    let p1_time = Duration::new(0, 0);
     let (p1, p2) = both(&inp);
     let p2_time = start.elapsed() - p1_time;
 

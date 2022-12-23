@@ -1,5 +1,5 @@
 use crate::Timing;
-use std::time::Instant;
+use std::time::{Duration, Instant};
 
 #[inline(always)]
 fn to_shift(c: u8) -> u32 {
@@ -33,7 +33,7 @@ fn part2(inp: &str) -> usize {
 pub fn solve(output: bool) -> Timing {
     let raw_input = include_str!("../input/day06.txt");
     let start = Instant::now();
-    let parse_time = start.elapsed();
+    let parse_time = Duration::new(0, 0);
     let p1 = part1(raw_input);
     let p1_time = start.elapsed() - parse_time;
     let p2 = part2(raw_input);
