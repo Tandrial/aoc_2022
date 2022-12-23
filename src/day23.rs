@@ -46,20 +46,66 @@ fn find_size(grid: &HashSet<i32>) -> i64 {
     ((x_max - x_min + 1).abs() * (y_max - y_min + 1).abs() - grid.len() as i16).into()
 }
 
+static NEIGHBORS: &[(i16, i16)] = &[
+    (-1, -1),
+    (-1, 0),
+    (-1, 1),
+    (0, -1),
+    (0, 1),
+    (1, -1),
+    (1, 0),
+    (1, 1),
+];
+
+fn do_round(grid: &HashSet<i32>, moves: &mut VecDeque<Move>) -> (HashSet<i32>, bool) {
+    let mut next_grid = HashSet::<i32>::new();
+    let mut prop_moves = HashMap::<i32, Vec<i32>>::new();
+    for &p in grid.iter() {
+        let x = (p >> 16) as i16;
+        let y = (p & 0xFF) as i16;
+        //If no other Elves are in one of those eight positions, the Elf does not do anything during this round.
+        if !NEIGHBORS
+            .iter()
+            .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
+        {
+            next_grid.insert(p);
+            continue;
+        }
+        let mut can_move = false;
+        for mvn in moves.iter() {
+            if !mvn
+                .checks
+                .iter()
+                .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
+            {
+                let (mov_x, mov_y) = mvn.dir;
+                can_move = true;
+                prop_moves
+                    .entry(build_hash(x + mov_x, y + mov_y))
+                    .or_default()
+                    .push(build_hash(x, y));
+                break;
+            }
+        }
+        if !can_move {
+            next_grid.insert(build_hash(x, y));
+        }
+    }
+    moves.rotate_left(1);
+
+    let moved = prop_moves.is_empty();
+    for (proposal, mut elves) in prop_moves {
+        if elves.len() == 1 {
+            next_grid.insert(proposal);
+        } else {
+            next_grid.extend(elves.drain(..));
+        }
+    }
+
+    (next_grid, moved)
+}
+
 fn both(inp: &HashSet<i32>) -> (i64, i64) {
-    let neighbours: Vec<(i16, i16)> = vec![
-        (-1, -1),
-        (-1, 0),
-        (-1, 1),
-        (0, -1),
-        (0, 1),
-        (1, -1),
-        (1, 0),
-        (1, 1),
-    ];
-
-    let mut grid = inp.clone();
-
     let mut moves = VecDeque::new();
     //If there is no Elf in the N, NE, or NW adjacent positions, the Elf proposes moving north one step.
     moves.push_back(Move {
@@ -82,63 +128,18 @@ fn both(inp: &HashSet<i32>) -> (i64, i64) {
         checks: [(1, 0), (1, -1), (1, 1)],
     });
 
-    let mut round = 0;
-    let mut part1 = 0;
-    loop {
-        if round == 10 {
-            part1 = find_size(&grid);
-        }
-        let mut next_grid = HashSet::<i32>::new();
-        let mut prop_moves = HashMap::<i32, Vec<i32>>::new();
-        for &p in grid.iter() {
-            let x = (p >> 16) as i16;
-            let y = (p & 0xFF) as i16;
-            //If no other Elves are in one of those eight positions, the Elf does not do anything during this round.
-            if !neighbours
-                .iter()
-                .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
-            {
-                next_grid.insert(p);
-                continue;
-            }
-            let mut can_move = false;
-            for mvn in moves.iter() {
-                if !mvn
-                    .checks
-                    .iter()
-                    .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
-                {
-                    let (mov_x, mov_y) = mvn.dir;
-                    can_move = true;
-                    prop_moves
-                        .entry(build_hash(x + mov_x, y + mov_y))
-                        .or_default()
-                        .push(build_hash(x, y));
-                    break;
-                }
-            }
-            if !can_move {
-                next_grid.insert(build_hash(x, y));
-            }
-        }
+    let mut grid = inp.clone();
+    (0..10).for_each(|_| (grid, _) = do_round(&grid, &mut moves));
+    let part1 = find_size(&grid);
 
-        if prop_moves.is_empty() {
-            return (part1, round + 1);
-        }
-
-        for (proposal, mut elves) in prop_moves {
-            if elves.len() == 1 {
-                next_grid.insert(proposal);
-            } else {
-                next_grid.extend(elves.drain(..));
-            }
-        }
-
-        let tmp = moves.pop_front().unwrap();
-        moves.push_back(tmp);
-        grid = next_grid;
+    let mut round = 10;
+    let mut done = false;
+    while !done {
+        (grid, done) = do_round(&grid, &mut moves);
         round += 1;
     }
+
+    (part1, round)
 }
 
 pub fn solve(output: bool) -> Timing {
