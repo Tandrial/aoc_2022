@@ -6,34 +6,48 @@ use std::{
 
 #[derive(Debug)]
 struct Move {
-    dir: (i64, i64),
-    checks: [(i64, i64); 3],
+    dir: (i16, i16),
+    checks: [(i16, i16); 3],
 }
 
-fn parse(input: &str) -> HashSet<(i64, i64)> {
-    let mut elves = HashSet::new();
+// The coordinates of each elf are encoded into a single number:
+// bit 31..16 == x_pos
+// bit 15..0  == y_pos
+fn build_hash(x: i16, y: i16) -> i32 {
+    ((x as i32) << 16) + y as i32
+}
+
+fn parse(input: &str) -> HashSet<i32> {
+    // We shift by 100 to make sure that the numbers are positive
+    let mut elves = HashSet::<i32>::new();
     for (idy, line) in input.lines().enumerate() {
         for (idx, c) in line.chars().enumerate() {
             if c == '#' {
-                elves.insert((idx as i64, idy as i64));
+                elves.insert(build_hash((idx + 100) as i16, (idy + 100) as i16));
             }
         }
     }
     elves
 }
 
-fn find_size(grid: &HashSet<(i64, i64)>) -> i64 {
-    let x_min = grid.iter().map(|(x, _)| x).min().unwrap();
-    let y_min = grid.iter().map(|(_, y)| y).min().unwrap();
+fn find_size(grid: &HashSet<i32>) -> i64 {
+    let mut x_min = i16::MAX;
+    let mut x_max = 0;
+    let mut y_min = i16::MAX;
+    let mut y_max = 0;
+    for elf in grid {
+        x_min = x_min.min((elf >> 16) as i16);
+        x_max = x_max.max((elf >> 16) as i16);
 
-    let x_max = grid.iter().map(|(x, _)| x).max().unwrap();
-    let y_max = grid.iter().map(|(_, y)| y).max().unwrap();
+        y_min = y_min.min((elf & 0xFF) as i16);
+        y_max = y_max.max((elf & 0xFF) as i16);
+    }
 
-    (x_max - x_min + 1).abs() * (y_max - y_min + 1).abs() - grid.len() as i64
+    ((x_max - x_min + 1).abs() * (y_max - y_min + 1).abs() - grid.len() as i16).into()
 }
 
-fn both(inp: &HashSet<(i64, i64)>) -> (i64, i64) {
-    let neighbours = vec![
+fn both(inp: &HashSet<i32>) -> (i64, i64) {
+    let neighbours: Vec<(i16, i16)> = vec![
         (-1, -1),
         (-1, 0),
         (-1, 1),
@@ -74,15 +88,17 @@ fn both(inp: &HashSet<(i64, i64)>) -> (i64, i64) {
         if round == 10 {
             part1 = find_size(&grid);
         }
-        let mut next_grid = HashSet::<(i64, i64)>::new();
-        let mut prop_moves = HashMap::<(i64, i64), Vec<(i64, i64)>>::new();
-        for &(x, y) in grid.iter() {
+        let mut next_grid = HashSet::<i32>::new();
+        let mut prop_moves = HashMap::<i32, Vec<i32>>::new();
+        for &p in grid.iter() {
+            let x = (p >> 16) as i16;
+            let y = (p & 0xFF) as i16;
             //If no other Elves are in one of those eight positions, the Elf does not do anything during this round.
             if !neighbours
                 .iter()
-                .any(|&(x_off, y_off)| grid.contains(&(x + x_off, y + y_off)))
+                .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
             {
-                next_grid.insert((x, y));
+                next_grid.insert(p);
                 continue;
             }
             let mut can_move = false;
@@ -90,17 +106,19 @@ fn both(inp: &HashSet<(i64, i64)>) -> (i64, i64) {
                 if !mvn
                     .checks
                     .iter()
-                    .any(|&(x_off, y_off)| grid.contains(&(x + x_off, y + y_off)))
+                    .any(|&(x_off, y_off)| grid.contains(&build_hash(x + x_off, y + y_off)))
                 {
                     let (mov_x, mov_y) = mvn.dir;
-                    let target = (x + mov_x, y + mov_y);
                     can_move = true;
-                    prop_moves.entry(target).or_default().push((x, y));
+                    prop_moves
+                        .entry(build_hash(x + mov_x, y + mov_y))
+                        .or_default()
+                        .push(build_hash(x, y));
                     break;
                 }
             }
             if !can_move {
-                next_grid.insert((x, y));
+                next_grid.insert(build_hash(x, y));
             }
         }
 
