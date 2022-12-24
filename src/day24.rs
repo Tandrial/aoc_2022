@@ -5,214 +5,220 @@ use std::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
-struct Blizzard {
-    dir: Point,
-    pos: Point,
+struct BlizzardMap {
+    // Blizzards are encoded as an u128 number
+    // for the right and left moving blizzards the LSB is the Right edge
+    // for the up and down moving blizzards the LSB is the Upper edge
+    right: Vec<u128>,
+    left: Vec<u128>,
+    up: Vec<u128>,
+    down: Vec<u128>,
 }
+impl BlizzardMap {
+    fn next(&self, max_x: usize, max_y: usize) -> BlizzardMap {
+        let right = self
+            .right
+            .iter()
+            .map(|&val| {
+                let idx = (val << 1).leading_zeros();
+                if 128 - idx > max_x as u32 && val & (1 << (max_x - 1)) != 0 {
+                    val << 1 | 1
+                } else {
+                    val << 1
+                }
+            })
+            .collect();
+        let down = self
+            .down
+            .iter()
+            .map(|&val| {
+                let idx = (val << 1).leading_zeros();
+                if 128 - idx > max_y as u32 && val & (1 << (max_y - 1)) != 0 {
+                    val << 1 | 1
+                } else {
+                    val << 1
+                }
+            })
+            .collect();
 
-impl Blizzard {
-    fn mve(&self, max_x: i64, max_y: i64) -> Self {
-        let mut new_x = self.pos.0 + self.dir.0;
-        let mut new_y = self.pos.1 + self.dir.1;
-
-        if new_x == 0 {
-            new_x = max_x - 1;
-        } else if new_x == max_x {
-            new_x = 1;
-        } else if new_y == 0 {
-            new_y = max_y - 1;
-        } else if new_y == max_y {
-            new_y = 1;
-        }
-        Blizzard {
-            dir: self.dir,
-            pos: (new_x, new_y),
+        let left = self
+            .left
+            .iter()
+            .map(|&val| val >> 1 | (val & 1) << (max_x - 1))
+            .collect();
+        let up = self
+            .up
+            .iter()
+            .map(|&val| val >> 1 | (val & 1) << (max_y - 1))
+            .collect();
+        BlizzardMap {
+            right,
+            left,
+            up,
+            down,
         }
     }
 }
 
 type Point = (i64, i64);
 
-fn parse(input: &str) -> (HashSet<Blizzard>, Point, Point, Point) {
-    let mut blizzards = HashSet::<Blizzard>::new();
+fn parse(input: &str) -> (BlizzardMap, usize, usize, Point, Point) {
+    let mut start = (-1, -1);
+    let mut exit = (-1, -1);
+    let max_x = input.lines().next().unwrap().len() - 2;
+    let max_y = input.lines().count() - 2;
 
-    let mut start = (0, 0);
-    let mut exit = (0, 0);
-    let mut max_x = 0;
-    let mut max_y = 0;
+    let mut right = vec![0u128; max_y];
+    let mut left = vec![0u128; max_y];
+    let mut up = vec![0u128; max_x];
+    let mut down = vec![0u128; max_x];
+
     for (idy, line) in input.lines().enumerate() {
         for (idx, c) in line.chars().enumerate() {
             let x = idx as i64;
-            let y = idy as i64;
             match c {
-                '>' => {
-                    blizzards.insert(Blizzard {
-                        dir: (1, 0),
-                        pos: (x, y),
-                    });
-                }
-                '<' => {
-                    blizzards.insert(Blizzard {
-                        dir: (-1, 0),
-                        pos: (x, y),
-                    });
-                }
-                'v' => {
-                    blizzards.insert(Blizzard {
-                        dir: (0, 1),
-                        pos: (x, y),
-                    });
-                }
-                '^' => {
-                    blizzards.insert(Blizzard {
-                        dir: (0, -1),
-                        pos: (x, y),
-                    });
-                }
-                '#' => {
-                    max_x = max_x.max(x);
-                    max_y = max_y.max(y);
-                }
+                '>' => *right.get_mut(idy - 1).unwrap() |= 1 << (idx - 1),
+                '<' => *left.get_mut(idy - 1).unwrap() |= 1 << (idx - 1),
+                'v' => *down.get_mut(idx - 1).unwrap() |= 1 << (idy - 1),
+                '^' => *up.get_mut(idx - 1).unwrap() |= 1 << (idy - 1),
+                '#' => {}
                 '.' => {
                     if idy == 0 {
-                        start = (x, y);
-                    } else {
-                        exit = (x, y);
+                        start = (x, idy as i64);
+                    } else if idy == max_y + 1 {
+                        exit = (x, idy as i64);
                     }
                 }
                 _ => unreachable!(),
             }
         }
     }
-    (blizzards, (max_x, max_y), start, exit)
-}
-
-#[allow(dead_code)]
-fn get_lcm(a: i64, b: i64) -> i64 {
-    let mut min = a.min(b);
-    let mut max = a.max(b);
-    let mut rem = min % max;
-
-    while rem != 0 {
-        max = min;
-        min = rem;
-        rem = max % min;
-    }
-    a * b / min
+    (
+        BlizzardMap {
+            right,
+            left,
+            up,
+            down,
+        },
+        max_x,
+        max_y,
+        start,
+        exit,
+    )
 }
 
 fn simulate(
-    movements: &HashSet<Blizzard>,
-    max_x: i64,
-    max_y: i64,
+    movements: &BlizzardMap,
+    max_x: usize,
+    max_y: usize,
     entry: &Point,
     exit: &Point,
 ) -> (i64, i64) {
-    let mut blizzard_positions = HashMap::<i64, HashSet<Blizzard>>::new();
-    let t1 = Instant::now();
-    blizzard_positions.insert(0, movements.clone());
+    let mut blizzard_maps = HashMap::<i64, BlizzardMap>::new();
+    let mut next_map = movements.clone();
 
-    for t in 1..750 {
-        let mut new_blizzards = HashSet::<Blizzard>::new();
-        blizzard_positions
-            .get(&(t - 1))
-            .unwrap()
-            .iter()
-            .for_each(|b| {
-                new_blizzards.insert(b.mve(max_x, max_y));
-            });
-        blizzard_positions.insert(t, new_blizzards);
+    for t in 0..750 {
+        blizzard_maps.insert(t, next_map.clone());
+        next_map = next_map.next(max_x, max_y);
     }
 
-    println!("Pre comp done took {:?}", t1.elapsed());
+    let mut trip_times = [0, 0, 0, 0];
 
-    let mut trip_times = [i64::MAX, i64::MAX, i64::MAX];
+    // Start reversed so that flipping start/target at the start makes it correct
+    let mut start = exit;
+    let mut target = entry;
 
-    let mut start_time = 0;
-    for trip_num in 0..3 {
-        let (mut start, mut target) = (entry, exit);
-        if trip_num == 1 {
-            start = exit;
-            target = entry;
-        }
+    for trip_num in 1..4 {
+        // Swap start and target
+        (start, target) = (target, start);
 
         let mut seen = HashSet::<(Point, i64)>::new();
         let mut q = VecDeque::new();
-        q.push_back((*start, start_time));
+        q.push_back((*start, trip_times[trip_num - 1]));
 
-        while let Some(((next_x, next_y), time)) = q.pop_front() {
-            if seen.contains(&((next_x, next_y), time)) {
+        while let Some(((cur_x, cur_y), time)) = q.pop_front() {
+            if seen.contains(&((cur_x, cur_y), time)) {
                 continue;
             }
-            seen.insert(((next_x, next_y), time));
-
-            let child_blizzard = blizzard_positions.get(&(time + 1)).unwrap();
-
-            for (dx, dy) in &[(0, -1), (0, 1), (1, 0), (-1, 0), (0, 0)] {
-                let (child_x, child_y) = (next_x + dx, next_y + dy);
-                if (child_x, child_y) == *target {
+            seen.insert(((cur_x, cur_y), time));
+            let next_blizzard_map = blizzard_maps.get(&(time + 1)).unwrap();
+            for (dx, dy) in &[(1, 0), (0, 1), (-1, 0), (0, -1), (0, 0)] {
+                let (next_x, next_y) = (cur_x + dx, cur_y + dy);
+                // Trip is finished, record time and clear the queue
+                if (next_x, next_y) == *target {
                     trip_times[trip_num] = time + 1;
                     q.clear();
                     break;
                 }
-                let check_blizz = no_blizzard_target((child_x, child_y), child_blizzard);
-                if (*dx == 0 && *dy == 0 && check_blizz)
-                    || ((1..max_x).contains(&child_x)
-                        && (1..max_y).contains(&child_y)
-                        && check_blizz)
+                // Can't move outside of the blizzard area
+                if (1..=max_x).contains(&(next_x as usize))
+                    && (1..=max_y).contains(&(next_y as usize))
+                // and only if there isn't a blizzard on the square
+                // the offset is to shift real world coords to blizzard coords
+                    && can_move(next_x - 1, next_y - 1, next_blizzard_map)
                 {
-                    // println!("  Can move to {child_x}/{child_y}");
-                    q.push_back(((child_x, child_y), time + 1));
+                    q.push_back(((next_x, next_y), time + 1));
                 }
             }
+            // We can wait at the start, which doesn't have blizzards so its always possible
+            if (cur_x, cur_y) == *start {
+                q.push_back(((cur_x, cur_y), time + 1));
+            }
         }
-        if trip_num == 2 {
-            return (trip_times[0], trip_times[2]);
+        if trip_num == 3 {
+            return (trip_times[1], trip_times[3]);
         }
-        start_time = trip_times[trip_num];
     }
     unreachable!()
 }
 
 #[allow(dead_code)]
-fn dump_blizzard(blizzard: &HashSet<Blizzard>, max_x: i64, max_y: i64) {
-    for y in 0..=max_y {
-        for x in 0..=max_x {
-            if x == 0 || x == max_x || y == 0 || y == max_y {
-                print!("#");
+fn dump_blizzard(b: &BlizzardMap, max_x: usize, max_y: usize) {
+    for y in 0..max_y {
+        for x in 0..max_x {
+            let right = *b.right.get(y).unwrap() & (1 << x);
+            let left = *b.left.get(y).unwrap() & (1 << x);
+            let up = *b.up.get(x).unwrap() & (1 << y);
+            let down = *b.down.get(x).unwrap() & (1 << y);
+
+            let cnt = [right, left, up, down]
+                .iter()
+                .filter(|&val| *val > 0)
+                .count();
+
+            if cnt > 1 {
+                print!("{cnt}")
+            } else if right >= 1 {
+                print!(">");
+            } else if left >= 1 {
+                print!("<");
+            } else if down >= 1 {
+                print!("v");
+            } else if up >= 1 {
+                print!("^");
             } else {
-                let mut it = blizzard.iter().filter(|b| b.pos == (x, y));
-
-                let cnt = it.clone().count();
-
-                if cnt == 1 {
-                    match it.next().unwrap().dir {
-                        (1, 0) => print!(">"),
-                        (-1, 0) => print!("<"),
-                        (0, 1) => print!("v"),
-                        (0, -1) => print!("^"),
-                        _ => unreachable!(),
-                    }
-                } else if cnt == 0 {
-                    print!(".");
-                } else {
-                    print!("{cnt}");
-                }
+                print!(".");
             }
         }
         println!();
     }
+    println!("\n");
 }
 
-fn no_blizzard_target(child_pos: Point, child_blizzard: &HashSet<Blizzard>) -> bool {
-    !child_blizzard
-        .iter()
-        .map(|b| b.pos)
-        .any(|b_pos| b_pos == child_pos)
+fn can_move(x: i64, y: i64, b: &BlizzardMap) -> bool {
+    let idx = x as usize;
+    let idy = y as usize;
+
+    let right = *b.right.get(idy).unwrap() & (1 << (x));
+    let left = *b.left.get(idy).unwrap() & (1 << (x));
+    let up = *b.up.get(idx).unwrap() & (1 << (y));
+    let down = *b.down.get(idx).unwrap() & (1 << (y));
+
+    right + left + up + down == 0
 }
 
-fn both(inp: &(HashSet<Blizzard>, Point, Point, Point)) -> (i64, i64) {
-    let (movements, (max_x, max_y), start, exit) = inp;
+fn both(inp: &(BlizzardMap, usize, usize, Point, Point)) -> (i64, i64) {
+    let (movements, max_x, max_y, start, exit) = inp;
     simulate(movements, *max_x, *max_y, start, exit)
 }
 
