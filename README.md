@@ -33,7 +33,7 @@ Trying to stay under `1s` for the whole thing.
 | 24  |  49.700 us |       0 ns |  79.366 ms |  79.416 ms |
 | sum |   7.649 ms | 136.123 ms | 980.886 ms |    1.125 s |
 
-`-6.523s` remaining
+`-0.125s` remaining
 
 ## Criterion benches
 
@@ -66,4 +66,4 @@ AoC 2022 - Day25        time:   missing
 AoC 2022 - All          time:   [1.1256 s 1.1280 s 1.1306 s]
 ```
 
-`-0.0339 s` remaining
+`-0.11280 s` remaining
