@@ -1,7 +1,6 @@
 use crate::Timing;
-use hashbrown::HashMap;
 use relative_path::{RelativePath as Path, RelativePathBuf as PathBuf};
-use std::time::Instant;
+use std::{collections::HashMap, time::Instant};
 
 fn parse(input: &str) -> HashMap<PathBuf, u64> {
     let mut path = PathBuf::new();

@@ -1,6 +1,5 @@
 use crate::Timing;
-use hashbrown::HashMap;
-use std::time::Instant;
+use std::{collections::HashMap, time::Instant};
 
 #[derive(Debug, PartialEq)]
 enum Monkey<'a> {

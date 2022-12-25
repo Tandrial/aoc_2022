@@ -1,7 +1,10 @@
 use crate::Timing;
-use hashbrown::{hash_map::Entry, HashMap, HashSet};
+use hashbrown::HashSet;
 use regex_macro::regex;
-use std::{collections::BTreeSet, time::Instant};
+use std::{
+    collections::{hash_map::Entry, BTreeSet, HashMap},
+    time::Instant,
+};
 
 type DistanceMap = HashMap<(u8, u8), i64>;
 type FlowMap = HashMap<u8, i64>;
