@@ -1,8 +1,6 @@
 use crate::Timing;
-use std::{
-    collections::{HashSet, VecDeque},
-    time::Instant,
-};
+use hashbrown::HashSet;
+use std::{collections::VecDeque, time::Instant};
 
 type Grid = Vec<Vec<u8>>;
 type Point = (i32, i32);

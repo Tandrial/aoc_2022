@@ -1,7 +1,8 @@
 use crate::Timing;
+use hashbrown::HashSet;
 use rayon::prelude::*;
 use regex_macro::regex;
-use std::collections::{HashSet, VecDeque};
+use std::collections::VecDeque;
 use std::time::Instant;
 
 struct Blueprint {

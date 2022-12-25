@@ -1,6 +1,7 @@
 use crate::Timing;
+use hashbrown::HashSet;
 use regex_macro::regex;
-use std::{collections::HashSet, time::Instant};
+use std::time::Instant;
 
 type Point = (i64, i64);
 

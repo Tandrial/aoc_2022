@@ -1,36 +1,25 @@
 use crate::Timing;
 use itertools::{EitherOrBoth, Itertools};
-use std::{
-    collections::HashMap,
-    time::{Duration, Instant},
-};
+use std::time::{Duration, Instant};
 
 fn parse(input: &str) -> Vec<&str> {
     input.lines().collect()
 }
+// char - 45 == idx
+static STODEC: [i8; 17] = [-1i8, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2];
+static DECTOS: [char; 5] = ['=', '-', '0', '1', '2'];
 
 fn sum_snafu(a: String, b: &str) -> String {
-    let mut look_up = HashMap::<char, i8>::new();
-    look_up.insert('2', 2);
-    look_up.insert('1', 1);
-    look_up.insert('0', 0);
-    look_up.insert('-', -1);
-    look_up.insert('=', -2);
-    let mut rev_look_up = HashMap::<i8, char>::new();
-    for (k, v) in look_up.iter() {
-        rev_look_up.insert(*v, *k);
-    }
-
-    let digits = a.chars().zip_longest(b.chars().rev());
+    let digits = a.as_bytes().iter().zip_longest(b.as_bytes().iter().rev());
     let mut result = String::new();
     let mut carry = 0i8;
     for p in digits {
         let mut val = match p {
             EitherOrBoth::Both(lhs, rhs) => {
-                look_up.get(&lhs).unwrap() + look_up.get(&rhs).unwrap() + carry
+                STODEC[(lhs - 45) as usize] + STODEC[(rhs - 45) as usize] + carry
             }
             EitherOrBoth::Left(val) | EitherOrBoth::Right(val) => {
-                look_up.get(&val).unwrap() + carry
+                STODEC[(val - 45) as usize] + carry
             }
         };
         if val > 2 {
@@ -43,10 +32,10 @@ fn sum_snafu(a: String, b: &str) -> String {
             carry = 0;
         }
 
-        result.push(*rev_look_up.get(&val).unwrap());
+        result.push(DECTOS[(val + 2) as usize]);
     }
     if carry != 0 {
-        result.push(*rev_look_up.get(&carry).unwrap());
+        result.push(DECTOS[(carry + 2) as usize]);
     }
 
     result

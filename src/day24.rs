@@ -1,6 +1,7 @@
 use crate::Timing;
+use hashbrown::{HashMap, HashSet};
 use std::{
-    collections::{HashMap, HashSet, VecDeque},
+    collections::VecDeque,
     time::{Duration, Instant},
 };
 

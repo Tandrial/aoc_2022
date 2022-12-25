@@ -1,9 +1,7 @@
 use crate::Timing;
+use hashbrown::{hash_map::Entry, HashMap, HashSet};
 use regex_macro::regex;
-use std::{
-    collections::{hash_map, BTreeSet, HashMap, HashSet},
-    time::Instant,
-};
+use std::{collections::BTreeSet, time::Instant};
 
 type DistanceMap = HashMap<(u8, u8), i64>;
 type FlowMap = HashMap<u8, i64>;
@@ -83,7 +81,7 @@ fn parse(input: &str) -> (DistanceMap, FlowMap) {
             for p in cur {
                 for &neigh in &all_rooms.get(&p).unwrap().1 {
                     let pair = (name, neigh);
-                    if let hash_map::Entry::Vacant(e) = distances.entry(pair) {
+                    if let Entry::Vacant(e) = distances.entry(pair) {
                         e.insert(dist);
                         next.insert(neigh);
                     }
