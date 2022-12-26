@@ -1,25 +1,17 @@
-use crate::Timing;
+use crate::{Point3D, Timing};
 use hashbrown::HashSet;
-use std::{
-    collections::{VecDeque},
-    time::Instant,
-};
+use std::{collections::VecDeque, time::Instant};
 
-type Point = (i64, i64, i64);
-
-fn parse(input: &str) -> HashSet<Point> {
-    let mut res = HashSet::<Point>::new();
+fn parse(input: &str) -> HashSet<Point3D> {
+    let mut res = HashSet::<Point3D>::new();
     for line in input.lines() {
-        let coords: Vec<i64> = line
-            .split(',')
-            .map(|num| num.parse::<i64>().unwrap())
-            .collect();
+        let coords: Vec<i32> = line.split(',').map(|num| num.parse().unwrap()).collect();
         res.insert((coords[0], coords[1], coords[2]));
     }
     res
 }
 
-fn part1(inp: &HashSet<Point>) -> i64 {
+fn part1(inp: &HashSet<Point3D>) -> i64 {
     let mut result = 0;
     for (x, y, z) in inp.iter() {
         let mut visible_surface: i64 = 6;
@@ -41,7 +33,7 @@ fn part1(inp: &HashSet<Point>) -> i64 {
     result
 }
 
-fn part2(inp: &HashSet<Point>) -> i64 {
+fn part2(inp: &HashSet<Point3D>) -> i64 {
     let x_min = inp.iter().map(|(x, _, _)| x).min().unwrap() - 1;
     let y_min = inp.iter().map(|(_, y, _)| y).min().unwrap() - 1;
     let z_min = inp.iter().map(|(_, _, z)| z).min().unwrap() - 1;
@@ -51,7 +43,7 @@ fn part2(inp: &HashSet<Point>) -> i64 {
     let z_max = inp.iter().map(|(_, _, z)| z).max().unwrap() + 1;
 
     let mut q = VecDeque::new();
-    let mut seen = HashSet::<Point>::new();
+    let mut seen = HashSet::<Point3D>::new();
     let start = (x_min, y_min, z_min);
     q.push_back(start);
     seen.insert(start);
@@ -97,6 +89,7 @@ pub fn solve(output: bool) -> Timing {
         println!("\tPart 1: {}", p1);
         println!("\tPart 2: {}", p2);
     }
+
     Timing {
         day: 18,
         parse: parse_time,

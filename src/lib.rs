@@ -31,6 +31,9 @@ pub mod day23;
 pub mod day24;
 pub mod day25;
 
+type Point2D = (i32, i32);
+type Point3D = (i32, i32, i32);
+
 pub struct Timing {
     pub day: u32,
     pub parse: Duration,

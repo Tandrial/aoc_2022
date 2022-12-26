@@ -63,6 +63,7 @@ pub fn solve(output: bool) -> Timing {
         println!("Day 25");
         println!("\tPart 1: {}", p1);
     }
+
     Timing {
         day: 25,
         parse: parse_time,

@@ -1,8 +1,6 @@
-use crate::Timing;
+use crate::{Point2D, Timing};
 use grid::Grid;
 use std::time::Instant;
-
-type Loc = (i32, i32);
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum Direction {
@@ -31,7 +29,7 @@ impl Direction {
         }
     }
 
-    fn get_move(&self) -> Loc {
+    fn get_move(&self) -> Point2D {
         match *self {
             Direction::Right => (1, 0),
             Direction::Down => (0, 1),
@@ -94,7 +92,7 @@ fn parse(input: &str) -> (Grid<char>, Vec<Move>) {
 fn find_combination(
     grid: &Grid<char>,
     moves: &Vec<Move>,
-    teleport: Box<dyn Fn(&Grid<char>, i32, Direction, Loc, Loc) -> (Loc, Direction)>,
+    teleport: Box<dyn Fn(&Grid<char>, i32, Direction, Point2D, Point2D) -> (Point2D, Direction)>,
 ) -> usize {
     let (height, width) = grid.size();
 
@@ -239,6 +237,7 @@ pub fn solve(output: bool) -> Timing {
         println!("\tPart 1: {}", p1);
         println!("\tPart 2: {}", p2);
     }
+
     Timing {
         day: 22,
         parse: parse_time,

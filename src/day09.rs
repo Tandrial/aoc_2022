@@ -1,4 +1,4 @@
-use crate::{index_twice, Timing};
+use crate::{index_twice, Point2D, Timing};
 use hashbrown::HashSet;
 use std::time::{Duration, Instant};
 
@@ -12,9 +12,9 @@ fn parse(inp: &str) -> Vec<(char, u8)> {
 }
 
 fn both(inp: &Vec<(char, u8)>) -> (usize, usize) {
-    let mut moved_p1 = HashSet::<(i32, i32)>::new();
+    let mut moved_p1 = HashSet::<Point2D>::new();
     moved_p1.insert((0, 0));
-    let mut moved_p2 = HashSet::<(i32, i32)>::new();
+    let mut moved_p2 = HashSet::<Point2D>::new();
     moved_p2.insert((0, 0));
     let mut rope = [(0, 0); 10];
     for (dir, l) in inp {
@@ -30,7 +30,7 @@ fn both(inp: &Vec<(char, u8)>) -> (usize, usize) {
             head.0 += offset.0;
             head.1 += offset.1;
             for idx in 0..rope.len() - 1 {
-                let (h, t) = index_twice::<(i32, i32)>(&mut rope, idx, idx + 1).unwrap();
+                let (h, t) = index_twice::<Point2D>(&mut rope, idx, idx + 1).unwrap();
                 let d = dist(h, t);
                 if d > 1 {
                     t.0 += (h.0 - t.0).signum();
@@ -48,7 +48,7 @@ fn both(inp: &Vec<(char, u8)>) -> (usize, usize) {
 }
 
 #[inline(always)]
-fn dist(head: &(i32, i32), tail: &(i32, i32)) -> i32 {
+fn dist(head: &Point2D, tail: &Point2D) -> i32 {
     (tail.0 - head.0).abs().max((tail.1 - head.1).abs())
 }
 
@@ -66,6 +66,7 @@ pub fn solve(output: bool) -> Timing {
         println!("\tPart 1: {}", p1);
         println!("\tPart 2: {}", p2);
     }
+
     Timing {
         day: 9,
         parse: parse_time,

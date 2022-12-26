@@ -1,57 +1,62 @@
-use crate::Timing;
+use crate::{Point2D, Timing};
+use grid::Grid;
 use hashbrown::HashSet;
 use std::{collections::VecDeque, time::Instant};
 
-type Grid = Vec<Vec<u8>>;
-type Point = (i32, i32);
+fn parse(input: &str) -> (Grid<u8>, Point2D, Point2D) {
+    let (mut h, mut w) = (0, 0);
+    for line in input.lines() {
+        h += 1;
+        w = w.max(line.len());
+    }
 
-fn parse(input: &str) -> (Grid, Point, Point) {
-    let height = &input.lines().count();
     let mut start = (0, 0);
     let mut end = (0, 0);
-    let mut grid = std::iter::repeat(vec![]).take(*height).collect::<Vec<_>>();
+    let mut grid = Grid::<u8>::new(h, w);
     for (idy, line) in input.lines().enumerate() {
         for (idx, &num) in line.as_bytes().iter().enumerate() {
             if num == b'S' {
                 start = (idx as i32, idy as i32);
-                grid.get_mut(idy).unwrap().push(b'a');
+                grid[idy][idx] = b'a';
             } else if num == b'E' {
                 end = (idx as i32, idy as i32);
-                grid.get_mut(idy).unwrap().push(b'z');
+                grid[idy][idx] = b'z';
             } else {
-                grid.get_mut(idy).unwrap().push(num);
+                grid[idy][idx] = num;
             }
         }
     }
     (grid, start, end)
 }
 
-fn part1_bfs(inp: &(Grid, Point, Point)) -> usize {
+fn part1_bfs(inp: &(Grid<u8>, Point2D, Point2D)) -> usize {
     let (grid, start, end) = inp;
 
-    let end_check = |p1: &Point, p2: &Point| p1 == p2;
-    let calc_diff = |cur: &u8, neighbor: &u8| *neighbor as i32 - *cur as i32;
+    let end_check = |p1: &Point2D, p2: &Point2D| p1 == p2;
+    let calc_diff = |cur: u8, neighbor: u8| neighbor as i32 - cur as i32;
 
     bfs(grid, start, end, end_check, calc_diff)
 }
 
-fn part2_bfs(inp: &(Grid, Point, Point)) -> usize {
+fn part2_bfs(inp: &(Grid<u8>, Point2D, Point2D)) -> usize {
     let (grid, end, start) = inp;
 
-    let end_check = |p1: &Point, _: &Point| p1.0 == 0;
-    let calc_diff = |cur: &u8, neighbor: &u8| *cur as i32 - *neighbor as i32;
+    let end_check = |p1: &Point2D, _: &Point2D| p1.0 == 0;
+    let calc_diff = |cur: u8, neighbor: u8| cur as i32 - neighbor as i32;
 
     bfs(grid, start, end, end_check, calc_diff)
 }
 
-fn bfs<T, F>(grid: &Grid, start: &Point, end: &Point, end_check: T, calc_diff: F) -> usize
+fn bfs<T, F>(grid: &Grid<u8>, start: &Point2D, end: &Point2D, end_check: T, calc_diff: F) -> usize
 where
-    T: Fn(&Point, &Point) -> bool,
-    F: Fn(&u8, &u8) -> i32,
+    T: Fn(&Point2D, &Point2D) -> bool,
+    F: Fn(u8, u8) -> i32,
 {
+    let (h, w) = grid.size();
+
     let mut result = 0;
     let mut q = VecDeque::new();
-    let mut seen = HashSet::<(i32, i32)>::new();
+    let mut seen = HashSet::<Point2D>::new();
     q.push_back((*start, "".to_string()));
     seen.insert(*start);
 
@@ -60,21 +65,16 @@ where
             result = path.len();
             break;
         }
-        let height = grid
-            .get(next_y as usize)
-            .and_then(|line| line.get(next_x as usize))
-            .unwrap();
+        let height = grid[next_y as usize][next_x as usize];
         for (dx, dy) in &[(0, -1), (0, 1), (1, 0), (-1, 0)] {
             let (child_x, child_y) = (next_x + dx, next_y + dy);
-            if let Some(c_height) = grid
-                .get(child_y as usize)
-                .and_then(|c| c.get(child_x as usize))
-            {
+            if (0..w).contains(&(child_x as usize)) && (0..h).contains(&(child_y as usize)) {
+                let c_height = grid[child_y as usize][child_x as usize];
                 let diff = calc_diff(height, c_height);
                 if diff <= 1 && !seen.contains(&(child_x, child_y)) {
                     seen.insert((child_x, child_y));
                     let mut path_new = path.clone();
-                    path_new.push(*c_height as char);
+                    path_new.push(c_height as char);
                     q.push_back(((child_x, child_y), path_new));
                 }
             }
@@ -98,6 +98,7 @@ pub fn solve(output: bool) -> Timing {
         println!("\tPart 1: {}", p1);
         println!("\tPart 2: {}", p2);
     }
+
     Timing {
         day: 12,
         parse: parse_time,

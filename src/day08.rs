@@ -1,19 +1,26 @@
-use crate::Timing;
+use grid::Grid;
+
+use crate::{Point2D, Timing};
 use std::time::{Duration, Instant};
 
-fn parse(input: &str) -> Vec<Vec<u8>> {
-    let height = &input.lines().count();
-    let mut grid = std::iter::repeat(vec![]).take(*height).collect::<Vec<_>>();
-    for (idx, line) in input.lines().enumerate() {
-        for &num in line.as_bytes() {
-            grid.get_mut(idx).unwrap().push(num - b'0');
+fn parse(input: &str) -> Grid<u8> {
+    let (mut h, mut w) = (0, 0);
+    for line in input.lines() {
+        h += 1;
+        w = w.max(line.len());
+    }
+
+    let mut grid = Grid::<u8>::new(h, w);
+    for (idy, line) in input.lines().enumerate() {
+        for (idx, num) in line.as_bytes().iter().enumerate() {
+            grid[idy][idx] = num - b'0';
         }
     }
     grid
 }
 
-fn both(inp: &Vec<Vec<u8>>) -> (i64, i64) {
-    let (h, w) = (inp.len() as i64, inp.first().unwrap().len() as i64);
+fn both(inp: &Grid<u8>) -> Point2D {
+    let (h, w) = inp.size();
     let mut p1 = 2 * h + 2 * (w - 2);
     let mut p2 = 0;
 
@@ -24,10 +31,10 @@ fn both(inp: &Vec<Vec<u8>>) -> (i64, i64) {
             for (dx, dy) in &[(0, -1i64), (0, 1), (1, 0), (-1i64, 0)] {
                 let mut view_distance = 0;
                 let mut blocked = false;
-                let (mut cur_x, mut cur_y) = (x + dx, y + dy);
-                while (0..w).contains(&cur_x) && (0..h).contains(&cur_y) {
+                let (mut cur_x, mut cur_y) = (x as i64 + dx, y as i64 + dy);
+                while (0..w).contains(&(cur_x as usize)) && (0..h).contains(&(cur_y as usize)) {
                     view_distance += 1;
-                    if inp[cur_y as usize][cur_x as usize] >= inp[y as usize][x as usize] {
+                    if inp[cur_y as usize][cur_x as usize] >= inp[y][x] {
                         blocked |= true;
                         break;
                     }
@@ -38,10 +45,10 @@ fn both(inp: &Vec<Vec<u8>>) -> (i64, i64) {
                 can_see |= !blocked;
             }
             p2 = p2.max(score);
-            p1 += can_see as i64;
+            p1 += can_see as usize;
         }
     }
-    (p1, p2)
+    (p1 as i32, p2)
 }
 
 pub fn solve(output: bool) -> Timing {
@@ -58,6 +65,7 @@ pub fn solve(output: bool) -> Timing {
         println!("\tPart 1: {}", p1);
         println!("\tPart 2: {}", p2);
     }
+
     Timing {
         day: 8,
         parse: parse_time,
