@@ -2,6 +2,8 @@ use crate::Timing;
 use grid::Grid;
 use std::time::Instant;
 
+type Loc = (i32, i32);
+
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 enum Direction {
     Right,
@@ -29,7 +31,7 @@ impl Direction {
         }
     }
 
-    fn get_move(&self) -> (i32, i32) {
+    fn get_move(&self) -> Loc {
         match *self {
             Direction::Right => (1, 0),
             Direction::Down => (0, 1),
@@ -89,54 +91,14 @@ fn parse(input: &str) -> (Grid<char>, Vec<Move>) {
     (grid, moves)
 }
 
-fn part1(inp: &(Grid<char>, Vec<Move>)) -> usize {
-    let (maze, moves) = inp;
-    let (height, width) = maze.size();
+fn find_combination(
+    grid: &Grid<char>,
+    moves: &Vec<Move>,
+    teleport: Box<dyn Fn(&Grid<char>, i32, Direction, Loc, Loc) -> (Loc, Direction)>,
+) -> usize {
+    let (height, width) = grid.size();
 
-    let (mut y_pos, mut x_pos) = (0usize, maze[0].iter().position(|c| *c == '.').unwrap());
-    let mut facing = Direction::Right;
-
-    for mve in moves {
-        match mve {
-            Move::Walk(steps) => {
-                for _ in 0..*steps {
-                    let (x_off, y_off) = facing.get_move();
-                    let (mut x_new, mut y_new) = (x_pos as i32 + x_off, y_pos as i32 + y_off);
-
-                    if !(0..width).contains(&(x_new as usize))
-                        || !(0..height).contains(&(y_new as usize))
-                        || !".#".contains(maze[y_new as usize][x_new as usize])
-                    {
-                        match facing {
-                            Direction::Right => x_new = 0,
-                            Direction::Down => y_new = 0,
-                            Direction::Left => x_new = width as i32 - 1,
-                            Direction::Up => y_new = height as i32 - 1,
-                        }
-                        while maze[y_new as usize][x_new as usize] == ' ' {
-                            x_new += x_off;
-                            y_new += y_off;
-                        }
-                    }
-                    if maze[y_new as usize][x_new as usize] == '#' {
-                        break;
-                    }
-                    x_pos = x_new as usize;
-                    y_pos = y_new as usize;
-                }
-            }
-            Move::TurnLeft => facing = facing.left(),
-            Move::TurnRight => facing = facing.right(),
-        }
-    }
-    1000 * (y_pos + 1) + 4 * (x_pos + 1) + facing as usize
-}
-
-fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
-    let (maze, moves) = inp;
-    let (height, width) = maze.size();
-
-    let (mut y_pos, mut x_pos) = (0usize, maze[0].iter().position(|c| *c == '.').unwrap());
+    let (mut y_pos, mut x_pos) = (0usize, grid[0].iter().position(|c| *c == '.').unwrap());
     let mut facing = Direction::Right;
 
     for mve in moves {
@@ -149,115 +111,17 @@ fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
 
                     if !(0..width).contains(&(x_new as usize))
                         || !(0..height).contains(&(y_new as usize))
-                        || !".#".contains(maze[y_new as usize][x_new as usize])
+                        || !".#".contains(grid[y_new as usize][x_new as usize])
                     {
-                        match get_face(x_pos, y_pos) {
-                            1 => match facing {
-                                Direction::Left => {
-                                    // End up at face 4
-                                    x_new = 0;
-                                    y_new = 149 - y_pos as i32;
-                                    facing_new = Direction::Right;
-                                }
-                                Direction::Up => {
-                                    // End up at face 6
-                                    x_new = 0;
-                                    y_new = 100 + x_pos as i32;
-                                    facing_new = Direction::Right;
-                                }
-                                _ => panic!(),
-                            },
-                            2 => match facing {
-                                Direction::Up => {
-                                    // End up at face 6
-                                    x_new = x_pos as i32 - 100;
-                                    y_new = 199;
-                                    facing_new = Direction::Up;
-                                }
-                                Direction::Right => {
-                                    // End up at face 5
-                                    x_new = 99;
-                                    y_new = 149 - y_pos as i32;
-                                    facing_new = Direction::Left;
-                                }
-                                Direction::Down => {
-                                    // End up at face 3
-                                    x_new = 99;
-                                    y_new = x_pos as i32 - 50;
-                                    facing_new = Direction::Left;
-                                }
-                                _ => panic!(),
-                            },
-                            3 => match facing {
-                                Direction::Right => {
-                                    // Ends up at face 2
-                                    x_new = 50 + y_pos as i32;
-                                    y_new = 49;
-                                    facing_new = Direction::Up;
-                                }
-                                Direction::Left => {
-                                    // End up at face 4
-                                    x_new = y_pos as i32 - 50;
-                                    y_new = 100;
-                                    facing_new = Direction::Down;
-                                }
-                                _ => panic!(),
-                            },
-                            4 => match facing {
-                                Direction::Left => {
-                                    // End up at face 1
-                                    x_new = 50;
-                                    y_new = 149 - y_pos as i32;
-                                    facing_new = Direction::Right;
-                                }
-                                Direction::Up => {
-                                    // End up at face 3
-                                    x_new = 50;
-                                    y_new = 50 + x_pos as i32;
-                                    facing_new = Direction::Right;
-                                }
-                                _ => panic!(),
-                            },
-                            5 => match facing {
-                                Direction::Right => {
-                                    // End up at face 2
-                                    x_new = 149;
-                                    y_new = 149 - y_pos as i32;
-                                    facing_new = Direction::Left;
-                                }
-                                Direction::Down => {
-                                    // End up at face 6
-                                    x_new = 49;
-                                    y_new = 100 + x_pos as i32;
-                                    facing_new = Direction::Left;
-                                }
-                                _ => panic!(),
-                            },
-                            6 => match facing {
-                                Direction::Right => {
-                                    // End up at face 5
-                                    y_new = 149;
-                                    x_new = y_pos as i32 - 100;
-                                    facing_new = Direction::Up;
-                                }
-                                Direction::Down => {
-                                    // End up at face 2
-                                    x_new = x_pos as i32 + 100;
-                                    y_new = 0;
-                                    facing_new = Direction::Down;
-                                }
-                                Direction::Left => {
-                                    // End up at face 1
-                                    x_new = y_pos as i32 - 100;
-                                    y_new = 0;
-                                    facing_new = Direction::Down;
-                                }
-                                _ => panic!(),
-                            },
-                            _ => panic!(),
-                        }
+                        ((x_new, y_new), facing_new) = teleport(
+                            grid,
+                            get_face(x_pos, y_pos),
+                            facing,
+                            (x_new, y_new),
+                            (x_pos as i32, y_pos as i32),
+                        );
                     }
-                    if maze[y_new as usize][x_new as usize] == '#' {
+                    if grid[y_new as usize][x_new as usize] == '#' {
                         break;
                     }
                     x_pos = x_new as usize;
@@ -270,6 +134,71 @@ fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
         }
     }
     1000 * (y_pos + 1) + 4 * (x_pos + 1) + facing as usize
+}
+
+fn part1(inp: &(Grid<char>, Vec<Move>)) -> usize {
+    let (grid, moves) = inp;
+    find_combination(
+        grid,
+        moves,
+        Box::new(|maze, _, facing, (mut x, mut y), (_, _)| {
+            let (h, w) = maze.size();
+            match facing {
+                Direction::Right => x = 0,
+                Direction::Down => y = 0,
+                Direction::Left => x = w as i32 - 1,
+                Direction::Up => y = h as i32 - 1,
+            }
+            while maze[y as usize][x as usize] == ' ' {
+                x += facing.get_move().0;
+                y += facing.get_move().1;
+            }
+            ((x, y), facing)
+        }),
+    )
+}
+
+fn part2(inp: &(Grid<char>, Vec<Move>)) -> usize {
+    let (grid, moves) = inp;
+    find_combination(
+        grid,
+        moves,
+        Box::new(|_, face, facing, (_, _), (x, y)| match face {
+            1 => match facing {
+                Direction::Left => ((0, 149 - y), Direction::Right),
+                Direction::Up => ((0, 100 + x), Direction::Right),
+                _ => panic!(),
+            },
+            2 => match facing {
+                Direction::Up => ((x - 100, 199), Direction::Up),
+                Direction::Right => ((99, 149 - y), Direction::Left),
+                Direction::Down => ((99, x - 50), Direction::Left),
+                _ => panic!(),
+            },
+            3 => match facing {
+                Direction::Right => ((50 + y, 49), Direction::Up),
+                Direction::Left => ((y - 50, 100), Direction::Down),
+                _ => panic!(),
+            },
+            4 => match facing {
+                Direction::Left => ((50, 149 - y), Direction::Right),
+                Direction::Up => ((50, 50 + x), Direction::Right),
+                _ => panic!(),
+            },
+            5 => match facing {
+                Direction::Right => ((149, 149 - y), Direction::Left),
+                Direction::Down => ((49, 100 + x), Direction::Left),
+                _ => panic!(),
+            },
+            6 => match facing {
+                Direction::Right => ((y - 100, 149), Direction::Up),
+                Direction::Down => ((x + 100, 0), Direction::Down),
+                Direction::Left => ((y - 100, 0), Direction::Down),
+                _ => panic!(),
+            },
+            _ => panic!(),
+        }),
+    )
 }
 
 fn get_face(x: usize, y: usize) -> i32 {
