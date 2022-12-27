@@ -3,7 +3,7 @@ use grid::Grid;
 use hashbrown::HashSet;
 use std::{collections::VecDeque, time::Instant};
 
-fn parse(input: &str) -> (Grid<u8>, Point2D, Point2D) {
+fn parse(input: &str) -> (Grid<u8>, Point2D<i32>, Point2D<i32>) {
     let (mut h, mut w) = (0, 0);
     for line in input.lines() {
         h += 1;
@@ -29,34 +29,40 @@ fn parse(input: &str) -> (Grid<u8>, Point2D, Point2D) {
     (grid, start, end)
 }
 
-fn part1_bfs(inp: &(Grid<u8>, Point2D, Point2D)) -> usize {
+fn part1_bfs(inp: &(Grid<u8>, Point2D<i32>, Point2D<i32>)) -> usize {
     let (grid, start, end) = inp;
 
-    let end_check = |p1: &Point2D, p2: &Point2D| p1 == p2;
+    let end_check = |p1: &Point2D<i32>, p2: &Point2D<i32>| p1 == p2;
     let calc_diff = |cur: u8, neighbor: u8| neighbor as i32 - cur as i32;
 
     bfs(grid, start, end, end_check, calc_diff)
 }
 
-fn part2_bfs(inp: &(Grid<u8>, Point2D, Point2D)) -> usize {
+fn part2_bfs(inp: &(Grid<u8>, Point2D<i32>, Point2D<i32>)) -> usize {
     let (grid, end, start) = inp;
 
-    let end_check = |p1: &Point2D, _: &Point2D| p1.0 == 0;
+    let end_check = |p1: &Point2D<i32>, _: &Point2D<i32>| p1.0 == 0;
     let calc_diff = |cur: u8, neighbor: u8| cur as i32 - neighbor as i32;
 
     bfs(grid, start, end, end_check, calc_diff)
 }
 
-fn bfs<T, F>(grid: &Grid<u8>, start: &Point2D, end: &Point2D, end_check: T, calc_diff: F) -> usize
+fn bfs<T, F>(
+    grid: &Grid<u8>,
+    start: &Point2D<i32>,
+    end: &Point2D<i32>,
+    end_check: T,
+    calc_diff: F,
+) -> usize
 where
-    T: Fn(&Point2D, &Point2D) -> bool,
+    T: Fn(&Point2D<i32>, &Point2D<i32>) -> bool,
     F: Fn(u8, u8) -> i32,
 {
     let (h, w) = grid.size();
 
     let mut result = 0;
     let mut q = VecDeque::new();
-    let mut seen = HashSet::<Point2D>::new();
+    let mut seen = HashSet::<Point2D<i32>>::new();
     q.push_back((*start, "".to_string()));
     seen.insert(*start);
 

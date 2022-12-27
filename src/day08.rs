@@ -19,7 +19,7 @@ fn parse(input: &str) -> Grid<u8> {
     grid
 }
 
-fn both(inp: &Grid<u8>) -> Point2D {
+fn both(inp: &Grid<u8>) -> Point2D<i32> {
     let (h, w) = inp.size();
     let mut p1 = 2 * h + 2 * (w - 2);
     let mut p2 = 0;
