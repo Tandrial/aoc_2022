@@ -12,7 +12,7 @@ fn parse(input: &str) -> Grid<u8> {
 
     let mut grid = Grid::<u8>::new(h, w);
     for (idy, line) in input.lines().enumerate() {
-        for (idx, num) in line.as_bytes().iter().enumerate() {
+        for (idx, num) in line.bytes().enumerate() {
             grid[idy][idx] = num - b'0';
         }
     }

@@ -14,7 +14,7 @@ fn parse(input: &str) -> (Grid<u8>, Point2D<i32>, Point2D<i32>) {
     let mut end = (0, 0);
     let mut grid = Grid::<u8>::new(h, w);
     for (idy, line) in input.lines().enumerate() {
-        for (idx, &num) in line.as_bytes().iter().enumerate() {
+        for (idx, num) in line.bytes().enumerate() {
             if num == b'S' {
                 start = (idx as i32, idy as i32);
                 grid[idy][idx] = b'a';

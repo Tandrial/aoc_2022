@@ -10,7 +10,7 @@ static STODEC: [i8; 17] = [-1i8, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -2
 static DECTOS: [char; 5] = ['=', '-', '0', '1', '2'];
 
 fn sum_snafu(a: String, b: &str) -> String {
-    let digits = a.as_bytes().iter().zip_longest(b.as_bytes().iter().rev());
+    let digits = a.bytes().zip_longest(b.bytes().rev());
     let mut result = String::new();
     let mut carry = 0i8;
     for p in digits {
