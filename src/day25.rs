@@ -52,7 +52,7 @@ fn part1(inp: &[&str]) -> String {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day25.txt");
+    let raw_input = include_str!("../aoc_input/2022/day25.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

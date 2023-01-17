@@ -66,15 +66,20 @@ pub fn dur_string(d: &Duration) -> String {
     }
 }
 
-fn index_twice<T>(slice: &mut [T], a: usize, b: usize) -> Option<(&mut T, &mut T)> {
-    if a == b {
-        return None;
-    }
-    // safe because a, b are distinct
-    unsafe {
-        Some((
-            &mut *(&mut slice[a] as *mut _),
-            &mut *(&mut slice[b] as *mut _),
-        ))
+pub trait BorrowTwoMut<T> {
+    fn borrow_two_mut(&mut self, a: usize, b: usize) -> (&mut T, &mut T);
+}
+
+impl<T> BorrowTwoMut<T> for [T] {
+    fn borrow_two_mut(&mut self, a: usize, b: usize) -> (&mut T, &mut T) {
+        assert!(a != b);
+        assert!(a < self.len());
+        assert!(b < self.len());
+        unsafe {
+            let ptr = self.as_mut_ptr();
+            let a_ptr = ptr.add(a);
+            let b_ptr = ptr.add(b);
+            (&mut *a_ptr, &mut *b_ptr)
+        }
     }
 }

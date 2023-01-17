@@ -52,7 +52,7 @@ fn both(inp: &Grid<u8>) -> Point2D<i32> {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day08.txt");
+    let raw_input = include_str!("../aoc_input/2022/day08.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

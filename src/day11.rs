@@ -86,7 +86,7 @@ fn part2(monkeys: &mut [Monkey]) -> u64 {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day11.txt");
+    let raw_input = include_str!("../aoc_input/2022/day11.txt");
     let start = Instant::now();
     let mut inp = parse(raw_input);
     let mut inp2 = parse(raw_input);

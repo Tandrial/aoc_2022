@@ -224,7 +224,7 @@ fn both(inp: &(BlizzardMap, usize, usize, Point, Point)) -> (i64, i64) {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day24.txt");
+    let raw_input = include_str!("../aoc_input/2022/day24.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

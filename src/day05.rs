@@ -1,4 +1,4 @@
-use crate::{index_twice, Timing};
+use crate::{BorrowTwoMut, Timing};
 use std::time::Instant;
 
 type CrateStack = Vec<char>;
@@ -50,7 +50,7 @@ fn part2(inp: &(Vec<CrateStack>, Vec<Move>)) -> String {
 fn apply_moves(inp: &(Vec<CrateStack>, Vec<Move>), lifo: bool) -> String {
     let mut state = inp.0.clone();
     for (cnt, from, to) in inp.1.iter() {
-        let (s, d) = index_twice::<CrateStack>(&mut state, *from, *to).unwrap();
+        let (s, d) = state.borrow_two_mut(*from, *to);
         if lifo {
             d.extend(s.drain(s.len() - *cnt..).rev());
         } else {
@@ -61,7 +61,7 @@ fn apply_moves(inp: &(Vec<CrateStack>, Vec<Move>), lifo: bool) -> String {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day05.txt");
+    let raw_input = include_str!("../aoc_input/2022/day05.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

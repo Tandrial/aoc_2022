@@ -31,7 +31,7 @@ fn part2(inp: &str) -> usize {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day06.txt");
+    let raw_input = include_str!("../aoc_input/2022/day06.txt");
     let start = Instant::now();
     let parse_time = Duration::new(0, 0);
     let p1 = part1(raw_input);

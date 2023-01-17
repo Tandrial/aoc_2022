@@ -116,7 +116,7 @@ fn both(inp: &mut Grid<u8>, max_y: usize, initial_x: usize) -> usize {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day14.txt");
+    let raw_input = include_str!("../aoc_input/2022/day14.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

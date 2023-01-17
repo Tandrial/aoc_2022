@@ -1,4 +1,4 @@
-use crate::{index_twice, Point2D, Timing};
+use crate::{BorrowTwoMut, Point2D, Timing};
 use hashbrown::HashSet;
 use std::time::{Duration, Instant};
 
@@ -30,7 +30,7 @@ fn both(inp: &Vec<(char, u8)>) -> (usize, usize) {
             head.0 += offset.0;
             head.1 += offset.1;
             for idx in 0..rope.len() - 1 {
-                let (h, t) = index_twice::<Point2D<i32>>(&mut rope, idx, idx + 1).unwrap();
+                let (h, t) = rope.borrow_two_mut(idx, idx + 1);
                 let d = dist(h, t);
                 if d > 1 {
                     t.0 += (h.0 - t.0).signum();
@@ -53,7 +53,7 @@ fn dist(head: &Point2D<i32>, tail: &Point2D<i32>) -> i32 {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day09.txt");
+    let raw_input = include_str!("../aoc_input/2022/day09.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

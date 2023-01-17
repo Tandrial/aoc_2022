@@ -108,7 +108,7 @@ fn part2(inp: &[(Point, i64)]) -> i64 {
 }
 
 pub fn solve(output: bool) -> Timing {
-    let raw_input = include_str!("../input/day15.txt");
+    let raw_input = include_str!("../aoc_input/2022/day15.txt");
     let start = Instant::now();
     let inp = parse(raw_input);
     let parse_time = start.elapsed();

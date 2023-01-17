@@ -27,3 +27,6 @@ harness = false
 [profile.dev]
 # Day 03 has "<< (c - 96)" which CAN shift 0 by a negative amount
 overflow-checks = false #  Turn off the checks to avoid the error
+
+[profile.release]
+lto = true
